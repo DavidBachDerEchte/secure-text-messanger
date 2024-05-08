@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8"/>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<title>Secured User to User Chat</title>
+	<script defer src="../script/external/jsencrypt.min.js"></script>
+	<script defer src="../script/internal/script.js"></script>
+</head>
+<body>
+<div class="container">
+	<h1>Secured User to User Chat</h1>
+
+	<h2 id="usernameid">User 1</h2>
+	<textarea id="inputText1" rows="4" cols="50" placeholder="Send a message..."></textarea>
+	<br>
+	<button onclick="sendMessage()" id="UserOneSend">Send</button>
+	<br>
+	<h3>Group Chat</h3>
+	<textarea id="receivedMessages" rows="20" cols="100" readonly></textarea>
+</div>
+</body>
+</html>
