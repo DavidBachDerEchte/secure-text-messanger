@@ -3,4 +3,5 @@ docker-compose.yml
 package-lock.json
 package.json
 server.js
+.DS_Store
 node_modules/

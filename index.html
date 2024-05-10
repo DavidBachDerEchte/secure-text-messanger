@@ -1,22 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Secured User to User Chat</title>
+	<title>Secured Text Messager | David Bach</title>
 	<script defer src="./script/external/jsencrypt.min.js"></script>
 	<script defer src="script/internal/Username.js"></script>
+
+
+	<link
+			href="./icon/apple-touch-icon.png"
+			rel="apple-touch-icon"
+			sizes="180x180"/>
+	<link
+			href="./icon/favicon-32x32.png"
+			rel="icon"
+			sizes="32x32"
+			type="image/png"/>
+	<link
+			href="./icon/favicon-194x194.png"
+			rel="icon"
+			sizes="194x194"
+			type="image/png"/>
+	<link
+			href="./android-chrome-192x192.png"
+			rel="icon"
+			sizes="192x192"
+			type="image/png"/>
+	<link
+			href="./icon/favicon-16x16.png"
+			rel="icon"
+			sizes="16x16"
+			type="image/png"/>
+	<link href="/site.webmanifest" rel="manifest"/>
+	<link color="#000000" href="./icon/safari-pinned-tab.svg" rel="mask-icon"/>
+	<meta content="#da532c" name="msapplication-TileColor"/>
+	<meta content="./icon/mstile-144x144.png" name="msapplication-TileImage"/>
+	<meta content="#ffffff" name="theme-color"/>
+	<meta content="This is the website of David Bach." name="description"/>
+	<link href="https://www.stm.davidbach.eu/" rel="canonical"/>
+
+	<title>David Bach</title>
+	<script defer type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "David Bach",
+			"description": "This is a Secure Text Messager by David Bach",
+			"url": "https://www.stm.davidbach.eu",
+			"logo": "https://www.stm.davidbach.eu/favicon-32x32.png"
+		}
+	</script>
+
+	<link rel="me" href="https://mastodon.social/@david_62"/>
+
+
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="./style/style.css">
 </head>
 <body>
+<div class="container">
+	<h1>Secured Text Messager</h1>
+	<textarea id="inputText" rows="4" cols="50" placeholder="Enter your Username..."></textarea>
+	<textarea id="JoinChat" rows="4" cols="50" placeholder="Enter the Chat code..."></textarea>
+	<button onclick="joinChat()">Connect</button>
+	<button onclick="createChatfunction()">Create Chat</button>
+</div>
 
-<textarea id="inputText" rows="4" cols="50" placeholder="Enter your Username..."></textarea>
-<textarea id="JoinChat" rows="4" cols="50" placeholder="Enter the Chat code..."></textarea>
-<button onclick="joinChat()">Connect</button>
 
 
 
 
-<button onclick="createChatfunction()">Create Chat</button>
+
+
 
 <h1 id="Warning"></h1>
 

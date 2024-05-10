@@ -59,7 +59,7 @@ cryptUser.setPrivateKey(privateKey);
 cryptUser.setPublicKey(publicKey);
 
 // Set Username
-let username = localStorage.getItem("username");
+let username = sessionStorage.getItem("username");
 let usernameElement = document.getElementById("usernameid");
 if (usernameElement) {
     usernameElement.textContent = username;
@@ -71,20 +71,20 @@ if (usernameElement) {
 function sendMessage() {
     let input, name;
 
-        input = document.getElementById("inputText1").value;
-        name = username;
+    input = document.getElementById("inputText1").value;
+    name = username;
 
 
     // Encrypt the message
     let encryptedText = cryptUser.encrypt(input);
 
 
-    fetch('http://localhost:3000/sendMessage', {
+    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/sendMessage', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({message: encryptedText, sender: name, chatcode: localStorage.getItem("chatcode")})
+        body: JSON.stringify({message: encryptedText, sender: name, chatcode: sessionStorage.getItem("chatcode")})
     })
         .then(response => {
             if (!response.ok) {
@@ -98,6 +98,8 @@ function sendMessage() {
         .catch(error => {
             console.error('Error creating Chat:', error);
         });
+
+    document.getElementById("inputText1").value = "";
 }
 
 function getChatHistory() {
@@ -106,12 +108,12 @@ function getChatHistory() {
     let combinedsender = "";
     let combinedMessages = "";
 
-    fetch('http://localhost:3000/getChatHistory', {
+    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/getChatHistory', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ chatcode: localStorage.getItem("chatcode") })
+        body: JSON.stringify({chatcode: sessionStorage.getItem("chatcode")})
     })
         .then(response => {
             if (!response.ok) {
@@ -138,14 +140,22 @@ function getChatHistory() {
             receivedMessages.value = decryptedMessages;
 
 
-
         })
         .catch(error => {
             console.error('Error reading Chat:', error);
         });
 }
 
+let chatcode = sessionStorage.getItem("chatcode");
+let chatcodeElement = document.getElementById("chatcodedisplay");
+if (chatcodeElement) {
+    chatcodeElement.textContent = chatcode;
+}
 
+let backButton = document.getElementById("backbutton");
+backButton.addEventListener("click", function () {
+    sessionStorage.removeItem("chatcode");
+    sessionStorage.removeItem("username");
+});
 
-setInterval(getChatHistory, 2000);
-// getChatHistory()
+setInterval(getChatHistory, 1000);

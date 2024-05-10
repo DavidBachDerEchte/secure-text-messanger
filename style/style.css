@@ -1,0 +1,98 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Poppins, sans-serif;
+  overflow: hidden;
+}
+.container h1 {
+  all: unset;
+  font-size: 40px;
+  font-weight: semibold;
+  user-select: none;
+}
+.container h2 {
+  all: unset;
+  font-size: 24px;
+  font-weight: 300;
+}
+.container h2 span {
+  font-weight: bold;
+}
+.container #usernameid {
+  all: unset;
+  font-size: 28px;
+  font-weight: 400;
+  margin-top: 1.4rem;
+  user-select: none;
+}
+.container h3 {
+  all: unset;
+  font-size: 28px;
+  font-weight: 400;
+  user-select: none;
+}
+.container textarea {
+  all: unset;
+  border: 1px black solid;
+  border-radius: 5px;
+  padding: 0.5rem;
+  color: black;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+.container a {
+  all: unset;
+  margin-top: 3rem;
+  font-size: 24px;
+  font-weight: 500;
+  user-select: none;
+  cursor: pointer;
+}
+.container button {
+  all: unset;
+  font-size: 24px;
+  background-color: lightblue;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  transition: 250ms;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+.container button:hover {
+  background-color: lightgreen;
+}
+.container button:focus {
+  background-color: #60be60;
+}
+@media (max-width: 850px) {
+  .container #receivedMessages {
+    width: 25em !important;
+    height: 15em !important;
+  }
+}
+@media (max-width: 450px) {
+  .container #receivedMessages, .container #inputText1, .container #inputText, .container #JoinChat {
+    width: 20em !important;
+    height: 8em !important;
+  }
+  .container h1 {
+    font-size: 24px;
+  }
+}
+@media (max-width: 366px) {
+  .container h1 {
+    font-size: 18px;
+  }
+  .container h2, .container h3 {
+    font-size: 16px;
+  }
+  .container #receivedMessages, .container #inputText1, .container #inputText, .container #JoinChat {
+    width: 15em !important;
+    height: 6em !important;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */

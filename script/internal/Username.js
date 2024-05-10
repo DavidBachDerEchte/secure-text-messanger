@@ -22,7 +22,7 @@ function joinChat() {
         body: JSON.stringify({username: usernameinput, chatcode: Chatcode})
     };
 
-    fetch('http://localhost:3000/getUsernames')
+    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/getUsernames')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -39,7 +39,7 @@ function joinChat() {
         });
 
     // Sent username to server
-    fetch('http://localhost:3000/insert', requestOptionsInsert)
+    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/insert', requestOptionsInsert)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -59,8 +59,11 @@ function joinChat() {
 
 function goon() {
     let usernameinput = document.getElementById("inputText").value;
+    let Chatcode = document.getElementById("JoinChat").value;
+
     if (username === true && chatcodeglobal === true) {
-        localStorage.setItem("username", usernameinput);
+        sessionStorage.setItem("username", usernameinput);
+        sessionStorage.setItem("chatcode", Chatcode);
         window.location.href = "./html/chat.html";
     } else {
         let warning = document.getElementById("Warning");
@@ -86,7 +89,7 @@ function createChatfunction() {
         body: JSON.stringify({username: usernameinput})
     };
 
-    fetch('http://localhost:3000/createChat', requestOptions)
+    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/createChat', requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -94,8 +97,8 @@ function createChatfunction() {
             return response.json();
         })
         .then(data => {
-            localStorage.setItem("username", usernameinput);
-            localStorage.setItem("chatcode", data.code);
+            sessionStorage.setItem("username", usernameinput);
+            sessionStorage.setItem("chatcode", data.code);
             window.location.href = "./html/chat.html";
         })
         .catch(error => {

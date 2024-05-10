@@ -6,18 +6,72 @@
 	<title>Secured User to User Chat</title>
 	<script defer src="../script/external/jsencrypt.min.js"></script>
 	<script defer src="../script/internal/script.js"></script>
+
+	
+	<link
+			href="../icon/apple-touch-icon.png"
+			rel="apple-touch-icon"
+			sizes="180x180"/>
+	<link
+			href="../icon/favicon-32x32.png"
+			rel="icon"
+			sizes="32x32"
+			type="image/png"/>
+	<link
+			href="../icon/favicon-194x194.png"
+			rel="icon"
+			sizes="194x194"
+			type="image/png"/>
+	<link
+			href="../android-chrome-192x192.png"
+			rel="icon"
+			sizes="192x192"
+			type="image/png"/>
+	<link
+			href="../icon/favicon-16x16.png"
+			rel="icon"
+			sizes="16x16"
+			type="image/png"/>
+	<link href="/site.webmanifest" rel="manifest"/>
+	<link color="#000000" href="../icon/safari-pinned-tab.svg" rel="mask-icon"/>
+	<meta content="#da532c" name="msapplication-TileColor"/>
+	<meta content="../icon/mstile-144x144.png" name="msapplication-TileImage"/>
+	<meta content="#ffffff" name="theme-color"/>
+	<meta content="This is the website of David Bach." name="description"/>
+	<link href="https://www.stm.davidbach.eu/" rel="canonical"/>
+
+	<title>David Bach</title>
+	<script defer type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "David Bach",
+			"description": "This is a Secure Text Messager by David Bach",
+			"url": "https://www.stm.davidbach.eu",
+			"logo": "https://www.stm.davidbach.eu/favicon-32x32.png"
+		}
+	</script>
+
+	<link rel="me" href="https://mastodon.social/@david_62"/>
+	
+	
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../style/style.css">
 </head>
 <body>
 <div class="container">
-	<h1>Secured User to User Chat</h1>
+	<h1>Secured Text Messager</h1>
+	<h2>Chat Code: <span id="chatcodedisplay">XXXXXX</span></h2>
 
-	<h2 id="usernameid">User 1</h2>
+	<h2 id="usernameid">Username</h2>
 	<textarea id="inputText1" rows="4" cols="50" placeholder="Send a message..."></textarea>
-	<br>
 	<button onclick="sendMessage()" id="UserOneSend">Send</button>
-	<br>
 	<h3>Group Chat</h3>
 	<textarea id="receivedMessages" rows="20" cols="100" readonly></textarea>
+
+	<a href="../index.html" id="backbutton">Back</a>
 </div>
 </body>
 </html>
