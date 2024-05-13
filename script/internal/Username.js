@@ -1,9 +1,11 @@
 let username = false;
 let chatcodeglobal = false;
 
+
 function joinChat() {
     let usernameinput = document.getElementById("inputText").value;
     let Chatcode = document.getElementById("JoinChat").value;
+
 
     if (Chatcode === "") {
         chatcodeglobal = false;
@@ -22,7 +24,7 @@ function joinChat() {
         body: JSON.stringify({username: usernameinput, chatcode: Chatcode})
     };
 
-    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/getUsernames')
+    fetch(`https://stm-node-server.vercel.app/getUsernames`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -39,7 +41,7 @@ function joinChat() {
         });
 
     // Sent username to server
-    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/insert', requestOptionsInsert)
+    fetch('https://stm-node-server.vercel.app/insert', requestOptionsInsert)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -89,7 +91,7 @@ function createChatfunction() {
         body: JSON.stringify({username: usernameinput})
     };
 
-    fetch('https://stm-node-server-davids-projects-a234c8fb.vercel.app/createChat', requestOptions)
+    fetch('https://stm-node-server.vercel.app/createChat', requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
