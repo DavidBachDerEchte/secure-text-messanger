@@ -71,17 +71,29 @@ function calculatePasswordStrength(password) {
 }
 
 document.addEventListener("input", (event) => {
-    let password = document.getElementById("password").value;
+    let password = document.getElementById("newpassword").value;
     document.getElementById('slider').value = calculatePasswordStrength(password);
 })
 
-document.getElementById("password").addEventListener("focus", (event) => {
+document.getElementById("newpassword").addEventListener("focus", (event) => {
     document.getElementsByClassName("passwordsecuritydiv")[0].style.transition = "250ms ease-in-out";
     document.getElementsByClassName("passwordsecuritydiv")[0].style.display = "flex";
 })
 
-function showPassword() {
-    let x = document.getElementById("password");
+function showoldPassword() {
+    let x = document.getElementById("oldpassword");
+    let passwordimg = document.getElementsByClassName("showpasswordimg")[0];
+    if (x.type === "password") {
+        x.type = "text";
+        passwordimg.src = "../icon/create&login/eyeclose.svg";
+    } else {
+        x.type = "password";
+        passwordimg.src = "../icon/create&login/eyeopen.svg";
+    }
+}
+
+function shownewPassword() {
+    let x = document.getElementById("newpassword");
     let passwordimg = document.getElementsByClassName("showpasswordimg")[0];
     if (x.type === "password") {
         x.type = "text";
@@ -95,17 +107,17 @@ function showPassword() {
 
 document.getElementById('createform').addEventListener("submit", (event) => {
     event.preventDefault();
-    let username = document.getElementById("username").value;
     let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+    let oldPassword = document.getElementById("oldpassword").value;
+    let newPassword = document.getElementById("newpassword").value;
 
 
-    fetch('http://localhost:3000/createLogin', {
+    fetch('http://localhost:3000/resetPassword', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: username, password: password, email: email})
+        body: JSON.stringify({newPassword: oldPassword, oldPassword: newPassword, email: email})
     })
         .then(response => {
             if (!response.ok) {
@@ -115,12 +127,41 @@ document.getElementById('createform').addEventListener("submit", (event) => {
         })
         .then(data => {
             if (!data.error) {
+                document.getElementById("newpassworderror").style.display = "none";
+                document.getElementById("newpasswordform").style.border = "1.5px solid #ecedec";
                 sessionStorage.setItem("UserID", data.UserID);
-                window.location.href = "./chatselection.html";
+                window.location.href = "../index.html";
             }
-            document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
-            document.getElementById("emailerror").style.display = "block";
-            document.getElementById("emailerror").textContent = data.error;
+            console.log(data);
+
+
+            if (data.error === "Invalid Email" || data.error === "Invalid Email" || data.error === "Email Doesn't fit the requirements") {
+                document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("emailerror").style.display = "block";
+                document.getElementById("emailerror").textContent = data.error;
+                document.getElementById("oldpassworderror").style.display = "none";
+                document.getElementById("oldpasswordform").style.border = "1.5px solid #ecedec";
+                document.getElementById("newpassworderror").style.display = "none";
+                document.getElementById("newpasswordform").style.border = "1.5px solid #ecedec";
+            }
+            if (data.error === "Invalid Old Password" || data.error === "Invalid old Password" || data.error === "Old Password Doesn't fit the requirements") {
+                document.getElementById("oldpasswordform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("oldpassworderror").style.display = "block";
+                document.getElementById("oldpassworderror").textContent = data.error;
+                document.getElementById("emailerror").style.display = "none";
+                document.getElementById("emailform").style.border = "1.5px solid #ecedec";
+                document.getElementById("newpassworderror").style.display = "none";
+                document.getElementById("newpasswordform").style.border = "1.5px solid #ecedec";
+            }
+            if (data.error === "Invalid new Password" || data.error === "New Password Doesn't fit the requirements") {
+                document.getElementById("newpasswordform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("newpassworderror").style.display = "block";
+                document.getElementById("newpassworderror").textContent = data.error;
+                document.getElementById("emailerror").style.display = "none";
+                document.getElementById("emailform").style.border = "1.5px solid #ecedec";
+                document.getElementById("oldpassworderror").style.display = "none";
+                document.getElementById("oldpasswordform").style.border = "1.5px solid #ecedec";
+            }
 
         })
         .catch(error => {

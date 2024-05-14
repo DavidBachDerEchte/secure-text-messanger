@@ -60,11 +60,50 @@ document.getElementById('loginform').addEventListener("submit", (event) => {
             return response.json();
         })
         .then(data => {
-            console.log(data);
-            sessionStorage.setItem("UserID", data.UserID);
-            localStorage.setItem("rememberEmail", data.rememberEmail);
-            localStorage.setItem("rememberPassword", data.rememberPassword);
-            window.location.href = "./html/chatselection.html";
+            if(!data.error) {
+                document.getElementById("emailerror").style.display = "none";
+                document.getElementById("passworderror").style.display = "none";
+                document.getElementById("emailform").style.border = "1.5px solid #ecedec";
+                document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
+                sessionStorage.setItem("UserID", data.UserID);
+                window.location.href = "./html/chatselection.html";
+            }
+
+            if (data.rememberEmail) {
+                localStorage.setItem("rememberEmail", data.rememberEmail);
+                localStorage.setItem("rememberPassword", data.rememberPassword);
+            }
+
+            if (data.error === "Invalid password") {
+                document.getElementById("passwordform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("passworderror").style.display = "block";
+                document.getElementById("passworderror").textContent = data.error;
+                document.getElementById("emailerror").style.display = "none";
+                document.getElementById("emailform").style.border = "1.5px solid #ecedec";
+            }
+            if (data.error === "Invalid email address") {
+                document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("emailerror").style.display = "block";
+                document.getElementById("emailerror").textContent = data.error;
+                document.getElementById("passworderror").style.display = "none";
+                document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
+            }
+            if (data.error === "Invalid Email") {
+                document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("emailerror").style.display = "block";
+                document.getElementById("emailerror").textContent = data.error;
+                document.getElementById("passworderror").style.display = "none";
+                document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
+            }
+            if (data.error === "Invalid Password") {
+                document.getElementById("passwordform").style.border = "1.5px solid #FF0000FF";
+                document.getElementById("passworderror").style.display = "block";
+                document.getElementById("passworderror").textContent = data.error;
+                document.getElementById("emailerror").style.display = "none";
+                document.getElementById("emailform").style.border = "1.5px solid #ecedec";
+            }
+
+
         })
         .catch(error => {
             console.error('Error logging in:', error);

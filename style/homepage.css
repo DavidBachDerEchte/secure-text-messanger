@@ -1,0 +1,112 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+body .container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  font-family: Poppins, sans-serif;
+}
+body .container .leftsidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 280px;
+  font-size: 18px;
+  border-right: 2.5px solid lightgray;
+}
+body .container .leftsidebar .account {
+  height: 120px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  border-bottom: 2.5px solid lightgray;
+}
+body .container .leftsidebar .account img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+}
+body .container .leftsidebar .account p {
+  all: unset;
+  width: 12ch;
+}
+body .container .leftsidebar .chats {
+  height: calc(100vh - 192px);
+  overflow-y: scroll;
+}
+body .container .leftsidebar .chats::-webkit-scrollbar {
+  width: 10px;
+}
+body .container .leftsidebar .chats::-webkit-scrollbar-thumb {
+  background-color: lightgray;
+  border-radius: 5px;
+}
+body .container .leftsidebar .chats::-webkit-scrollbar-track {
+  background-color: white;
+}
+body .container .leftsidebar .chats ul {
+  all: unset;
+}
+body .container .leftsidebar .chats ul li {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 80px;
+  border-top: 1.25px solid lightgray;
+  border-bottom: 1.25px solid lightgray;
+}
+body .container .leftsidebar .settings {
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 2.5px solid lightgray;
+}
+body .container .leftsidebar .settings .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 8px;
+  height: 36px;
+  width: 120px;
+  border: none;
+  background: lightgray;
+  border-radius: 20px;
+  cursor: pointer;
+}
+body .container .leftsidebar .settings .lable {
+  line-height: 20px;
+  font-size: 17px;
+  color: black;
+  font-family: sans-serif;
+  letter-spacing: 1px;
+}
+body .container .leftsidebar .settings .button:hover .svg-icon {
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+body .container .currentChat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: calc(100vw - 282px);
+  font-size: 18px;
+  background-color: darkgray;
+  justify-content: center;
+  align-items: center;
+}
+
+/*# sourceMappingURL=homepage.css.map */
