@@ -3,7 +3,7 @@ let chatcodeglobal = false;
 
 
 function joinChat() {
-    let usernameinput = document.getElementById("inputText").value;
+    let UserID = sessionStorage.getItem("UserID");
     let Chatcode = document.getElementById("JoinChat").value;
 
 
@@ -11,7 +11,7 @@ function joinChat() {
         chatcodeglobal = false;
     }
 
-    if (usernameinput === "") {
+    if (UserID === "") {
         username = false;
     }
 
@@ -21,27 +21,11 @@ function joinChat() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: usernameinput, chatcode: Chatcode})
+        body: JSON.stringify({UserID: UserID, chatcode: Chatcode})
     };
 
-    fetch(`https://stm-node-server.vercel.app/getUsernames`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            username = true;
-            console.log(data.message);
-            goon();
-        })
-        .catch(error => {
-            console.error('Error to read user:', error);
-        });
-
     // Sent username to server
-    fetch('https://stm-node-server.vercel.app/insert', requestOptionsInsert)
+    fetch('http://localhost:3000/joinChat', requestOptionsInsert)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -51,6 +35,7 @@ function joinChat() {
         .then(data => {
             chatcodeglobal = true;
             console.log(data.message);
+            sessionStorage.setItem("username", data.username);
             goon();
         })
         .catch(error => {
@@ -60,26 +45,19 @@ function joinChat() {
 }
 
 function goon() {
-    let usernameinput = document.getElementById("inputText").value;
     let Chatcode = document.getElementById("JoinChat").value;
 
-    if (username === true && chatcodeglobal === true) {
-        sessionStorage.setItem("username", usernameinput);
+    if (chatcodeglobal === true) {
         sessionStorage.setItem("chatcode", Chatcode);
-        window.location.href = "./html/chat.html";
-    } else {
-        let warning = document.getElementById("Warning");
-        warning.textContent = "Please Enter Username and Chat Code.";
-        warning.style.color = "red";
-        warning.style.fontSize = "20px";
+        window.location.href = "./chat.html";
     }
 }
 
 
 function createChatfunction() {
-    let usernameinput = document.getElementById("inputText").value;
+    let UserID = sessionStorage.getItem("UserID");
 
-    if (usernameinput === "") {
+    if (UserID === "") {
         return;
     }
 
@@ -88,10 +66,10 @@ function createChatfunction() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({username: usernameinput})
+        body: JSON.stringify({UserID: UserID})
     };
 
-    fetch('https://stm-node-server.vercel.app/createChat', requestOptions)
+    fetch('http://localhost:3000/createChat', requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -99,9 +77,9 @@ function createChatfunction() {
             return response.json();
         })
         .then(data => {
-            sessionStorage.setItem("username", usernameinput);
             sessionStorage.setItem("chatcode", data.code);
-            window.location.href = "./html/chat.html";
+            sessionStorage.setItem("username", data.usernames);
+            window.location.href = "./chat.html";
         })
         .catch(error => {
             console.error('Error creating Chat:', error);

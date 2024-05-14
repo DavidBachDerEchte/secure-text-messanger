@@ -10,18 +10,17 @@ if (usernameElement) {
 
 
 function sendMessage() {
-    let input, name;
+    let input;
 
     input = document.getElementById("inputText1").value;
-    name = username;
 
 
-    fetch('https://stm-node-server.vercel.app/sendMessage', {
+    fetch('http://localhost:3000/sendMessage', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({message: input, sender: name, chatcode: sessionStorage.getItem("chatcode")})
+        body: JSON.stringify({message: input, userID: sessionStorage.getItem("UserID"), chatcode: sessionStorage.getItem("chatcode")})
     })
         .then(response => {
             if (!response.ok) {
@@ -42,7 +41,7 @@ function sendMessage() {
 
 function getChatHistory() {
     let receavedMEsseage = document.getElementById("receivedMessages");
-    fetch('https://stm-node-server.vercel.app/getChatHistory', {
+    fetch('http://localhost:3000/getChatHistory', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
