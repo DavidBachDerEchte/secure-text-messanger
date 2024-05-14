@@ -1,3 +1,3 @@
 docker-compose up -d
 
-node server.js
+node server.js aka nodemon
