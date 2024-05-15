@@ -5,3 +5,4 @@ package.json
 server.js
 .DS_Store
 node_modules/
+.env

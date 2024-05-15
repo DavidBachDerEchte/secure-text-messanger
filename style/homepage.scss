@@ -7,7 +7,8 @@ body {
 		display: flex;
 		flex-direction: row;
 		height: 100vh;
-		font-family: Poppins, sans-serif;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		position: fixed;
 
 		.leftsidebar {
 			display: flex;
@@ -29,6 +30,7 @@ body {
 					width: 75px;
 					height: 75px;
 					border-radius: 50%;
+					cursor: pointer;
 				}
 
 				p {
@@ -90,6 +92,10 @@ body {
 					background: #D3D3D3FF;
 					border-radius: 20px;
 					cursor: pointer;
+
+					&:hover .svg-icon {
+						animation: spin 2s linear infinite;
+					}
 				}
 
 				.lable {
@@ -100,9 +106,6 @@ body {
 					letter-spacing: 1px;
 				}
 
-				.button:hover .svg-icon {
-					animation: spin 2s linear infinite;
-				}
 
 				@keyframes spin {
 					0% {
@@ -120,12 +123,187 @@ body {
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
-			width: calc(100vw - 282px);
+			width: calc(100vw - 562px);
 			font-size: 18px;
 			background-color: darkgray;
 			justify-content: center;
 			align-items: center;
 		}
 
+		.rightsidebar {
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			width: 280px;
+			font-size: 18px;
+			border-left: 2.5px solid #D3D3D3FF;
+
+			.title {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 10px;
+				border-bottom: 2.5px solid #D3D3D3FF;
+				margin-left: 10px;
+			}
+
+			.friends {
+				//overflow-y: scroll;
+				//
+				//&::-webkit-scrollbar {
+				//	width: 10px;
+				//}
+				//
+				//&::-webkit-scrollbar-thumb {
+				//	background-color: #D3D3D3FF;
+				//	border-radius: 5px;
+				//
+				//}
+				//
+				//&::-webkit-scrollbar-track {
+				//	background-color: white;
+				//}
+
+				ul {
+					all: unset;
+					li {
+						display: flex;
+						flex-direction: column;
+						justify-content: space-around;
+						align-items: center;
+						height: 40px;
+						border-top: 1.25px solid #D3D3D3FF;
+						border-bottom: 1.25px solid #D3D3D3FF;
+					}
+				}
+			}
+
+		}
+
 	}
+
+	.ProfilePictureOverlay {
+		display: flex;
+		width: 100vw;
+		height: 100vh;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+		cursor: pointer;
+	}
+
+	#settingsOverlay {
+		display: flex;
+		width: 100vw;
+		height: 100vh;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+
+		#settingsContainer {
+			display: flex;
+			flex-direction: row;
+			width: 80vw;
+			height: 80vh;
+			border-radius: 20px;
+			background-color: white;
+
+			#settingsleftsidebar {
+				width: 240px;
+				height: 100%;
+				border-right: 2.5px solid #D3D3D3FF;
+				background-color: white;
+				border-top-left-radius: 20px;
+				border-bottom-left-radius: 20px;
+				cursor: pointer;
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+				button {
+					all: unset;
+					display: flex;
+					flex-direction: row;
+					justify-content: space-around;
+					align-items: center;
+					width: 100%;
+					height: 40px;
+					border-bottom: 2.5px solid #D3D3D3FF;
+					cursor: pointer;
+				}
+			}
+
+			#settingsrest {
+				width: calc(100% - 242px);
+				height: 100%;
+				background-color: lightgray;
+				border-top-right-radius: 20px;
+				border-bottom-right-radius: 20px;
+				display: flex;
+				flex-direction: column;
+
+
+				button {
+					all: unset;
+					cursor: pointer;
+					margin-left: auto;
+					margin-right: 10px;
+					height: 50px;
+
+					img {
+						width: 40px;
+					}
+				}
+
+				#title {
+					font-family: 'Poppins', sans-serif;
+					font-size: 24px;
+					margin: 0 0 0 10px;
+				}
+
+				.custum-file-upload {
+					height: 200px;
+					width: 300px;
+					display: flex;
+					flex-direction: column;
+					gap: 20px;
+					cursor: pointer;
+					align-items: center;
+					justify-content: center;
+					border: 2px dashed black;
+					background-color: darkgray;
+					padding: 1.5rem;
+					border-radius: 10px;
+					margin-top: 20px;
+					margin-left: 10px;
+				}
+
+				.custum-file-upload .icon {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+
+				.custum-file-upload .icon svg {
+					height: 80px;
+					fill: black;
+				}
+
+				.custum-file-upload .text {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+
+				.custum-file-upload .text span {
+					font-weight: 400;
+					color: black;
+				}
+
+				.custum-file-upload input {
+					display: none;
+				}
+
+			}
+		}
+	}
+
 }

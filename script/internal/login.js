@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 console.log(data);
                 sessionStorage.setItem("UserID", data.UserID);
-                window.location.href = "./html/chatselection.html";
+                window.location.href = "./html/homepage.html";
             })
             .catch(error => {
                 console.error('Error logging in:', error);
@@ -66,7 +66,7 @@ document.getElementById('loginform').addEventListener("submit", (event) => {
                 document.getElementById("emailform").style.border = "1.5px solid #ecedec";
                 document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
                 sessionStorage.setItem("UserID", data.UserID);
-                window.location.href = "./html/chatselection.html";
+                window.location.href = "./html/homepage.html";
             }
 
             if (data.rememberEmail) {
