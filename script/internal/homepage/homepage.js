@@ -14,19 +14,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
                 document.getElementById("AccountName").textContent = data.username;
             })
             .catch(error => {
                 console.error('Error getting user data:', error);
             });
+
     }
+
+    getFriends();
 })
 
 function openSettings() {
     let containerParent = document.getElementById("container").parentElement;
     containerParent.firstElementChild.style.filter = "blur(10px)";
-    document.body.style.backgroundColor = "rgba(0, 0, 0, .45)";
     let active = false;
 
     let settingsOverlay = document.createElement("div");
@@ -50,11 +51,9 @@ function openSettings() {
 
     settingsExit.addEventListener("click", function () {
         containerParent.firstElementChild.style.filter = "blur(0px)";
-        document.body.style.backgroundColor = "rgba(0, 0, 0, 0)";
         settingsOverlay.remove();
         active = false;
     })
-
 
 
     // leftsidebar content
@@ -104,9 +103,147 @@ function createProfileSettings() {
     title.setAttribute("id", "title");
     title.textContent = "Profile Settings";
 
+    let useridp = document.createElement("p");
+    useridp.textContent = "UserID: " + sessionStorage.getItem("UserID");
 
     settingsrest.appendChild(title);
+    settingsrest.appendChild(useridp);
 }
+
+
+function addFriend() {
+    let containerParent = document.getElementById("container").parentElement;
+    containerParent.firstElementChild.style.filter = "blur(10px)";
+    let active = false;
+
+    let friendOverlay = document.createElement("div");
+    friendOverlay.setAttribute("id", "friendOverlay");
+
+    let friendContainer = document.createElement("div");
+    friendContainer.setAttribute("id", "friendContainer");
+
+    let friendExit = document.createElement("button");
+    friendExit.setAttribute("id", "friendExit");
+
+    let friendExitimg = document.createElement("img");
+    friendExitimg.setAttribute("id", "friendExitimg");
+    friendExitimg.src = "../icon/create&login/X.svg";
+
+    let friendrest = document.createElement("div");
+    friendrest.setAttribute("id", "friendrest");
+
+    friendExit.addEventListener("click", function () {
+        containerParent.firstElementChild.style.filter = "blur(0px)";
+        friendOverlay.remove();
+        active = false;
+    })
+
+
+    friendExit.appendChild(friendExitimg);
+    friendrest.appendChild(friendExit);
+    friendContainer.appendChild(friendrest);
+    friendOverlay.appendChild(friendContainer);
+    containerParent.appendChild(friendOverlay);
+
+    if (!active) {
+        addFriendsPage();
+        active = true;
+    }
+}
+
+function addFriendsPage() {
+    let friendrest = document.getElementById("friendrest");
+
+    let title = document.createElement("p");
+    title.setAttribute("id", "title");
+    title.textContent = "Add Friends";
+
+    let friendIDinput = document.createElement("input");
+    friendIDinput.id = "friendIDinput";
+    friendIDinput.placeholder = "Enter the <name>#<UserID>  of the person you want to add as a friend";
+    friendIDinput.setAttribute("text", "text");
+
+    let button = document.createElement("button");
+    button.id = "addfriendbutton";
+    button.textContent = "Add Friend";
+    button.onclick = function () {
+        addfriendtoaccount();
+    }
+
+    friendrest.appendChild(title);
+    friendrest.appendChild(friendIDinput);
+    friendrest.appendChild(button);
+}
+
+function addfriendtoaccount() {
+    let friendIDinput = document.getElementById("friendIDinput").value;
+
+    if (friendIDinput) {
+        fetch('http://localhost:3000/addFriend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({myuserID: sessionStorage.getItem("UserID"), friendIDinput: friendIDinput})
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data =>{
+                console.log(data);
+                setTimeout(function () {
+                    getFriends();
+                },1000);
+            })
+            .catch(error => {
+                console.error('Error getting user data:', error);
+            });
+    }
+}
+
+function getFriends() {
+    fetch('http://localhost:3000/getFriends', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userID: sessionStorage.getItem("UserID")})
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            for (let i = 0; i < data.friends.length; i++) {
+                if (data.friends[i].friendsID) {
+                    let parent = document.getElementsByClassName("friendslist")[0];
+                    let friend = document.createElement("div");
+                    friend.setAttribute("class", "friend");
+                    let friendName = document.createElement("p");
+                    friendName.textContent = data.friends[i].friendsUsername;
+                    friend.appendChild(friendName);
+
+                    if (data.friends[i].friendsStatus !== "Accepted") {
+                        let friendstatus = document.createElement("span");
+                        friendstatus.textContent = data.friends[i].friendsStatus;
+                        friend.appendChild(friendstatus);
+                    }
+
+                    parent.appendChild(friend);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error getting user data:', error);
+        });
+}
+
+
 
 
 

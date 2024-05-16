@@ -116,7 +116,7 @@ document.getElementById('createform').addEventListener("submit", (event) => {
         .then(data => {
             if (!data.error) {
                 sessionStorage.setItem("UserID", data.UserID);
-                window.location.href = "./html/homepage.html";
+                window.location.href = "./homepage.html";
             }
             document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
             document.getElementById("emailerror").style.display = "block";

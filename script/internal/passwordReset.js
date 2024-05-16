@@ -15,7 +15,10 @@ document.getElementById('createform').addEventListener("submit", (event) => {
             return response.json();
         })
         .then(data => {
-            console.log(data);
+            sessionStorage.setItem('UserID', data.userID);
+            setTimeout(function () {
+                window.location.href = "./newpassword.html";
+            },1000)
         })
         .catch(error => {
             console.error('Error creating account:', error);

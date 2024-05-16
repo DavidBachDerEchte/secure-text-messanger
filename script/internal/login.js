@@ -60,6 +60,7 @@ document.getElementById('loginform').addEventListener("submit", (event) => {
             return response.json();
         })
         .then(data => {
+            console.log(data);
             if(!data.error) {
                 document.getElementById("emailerror").style.display = "none";
                 document.getElementById("passworderror").style.display = "none";
@@ -88,14 +89,14 @@ document.getElementById('loginform').addEventListener("submit", (event) => {
                 document.getElementById("passworderror").style.display = "none";
                 document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
             }
-            if (data.error === "Invalid Email") {
+            if (data.error === "Email Doesn't fit the requirements") {
                 document.getElementById("emailform").style.border = "1.5px solid #FF0000FF";
                 document.getElementById("emailerror").style.display = "block";
                 document.getElementById("emailerror").textContent = data.error;
                 document.getElementById("passworderror").style.display = "none";
                 document.getElementById("passwordform").style.border = "1.5px solid #ecedec";
             }
-            if (data.error === "Invalid Password") {
+            if (data.error === "Password Doesn't fit the requirements") {
                 document.getElementById("passwordform").style.border = "1.5px solid #FF0000FF";
                 document.getElementById("passworderror").style.display = "block";
                 document.getElementById("passworderror").textContent = data.error;

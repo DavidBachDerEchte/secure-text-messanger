@@ -63,58 +63,69 @@
 <body>
 <div class="container" id="container">
 	<div class="leftsidebar">
-		<div class="account">
-			<img src="../icon/testaccount/dingo.jpeg" alt="Profile Picture" id="ProfilePicture">
-			<p id="AccountName">Account name</p>
+		<div class="top">
+		<button onclick="openSettings()" class="account">
+			<div class="avatar">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+				<p id="AccountName">Account name</p>
+			</div>
+		</button>
+		<button class="newchat">
+			<div class="plus">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+				<p>New Chat</p>
+			</div>
+		</button>
 		</div>
 		<div class="chats">
-			<ul>
-				<li>Chat 1</li>
-				<li>Chat 2</li>
-				<li>Chat 3</li>
-				<li>Chat 4</li>
-				<li>Chat 5</li>
-				<li>Chat 6</li>
-				<li>Chat 7</li>
-				<li>Chat 8</li>
-				<li>Chat 9</li>
-				<li>Chat 10</li>
-				<li>Chat 11</li>
-				<li>Chat 12</li>
-				<li>Chat 13</li>
-				<li>Chat 14</li>
-				<li>Chat 15 und so weiter</li>
-			</ul>
-		</div>
-		<div class="settings">
-			<button class="button" onclick="openSettings()">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 20 20" height="20" fill="none" class="svg-icon"><g stroke-width="1.5" stroke-linecap="round" stroke="#5d41de"><circle r="2.5" cy="10" cx="10"></circle><path fill-rule="evenodd" d="m8.39079 2.80235c.53842-1.51424 2.67991-1.51424 3.21831-.00001.3392.95358 1.4284 1.40477 2.3425.97027 1.4514-.68995 2.9657.82427 2.2758 2.27575-.4345.91407.0166 2.00334.9702 2.34248 1.5143.53842 1.5143 2.67996 0 3.21836-.9536.3391-1.4047 1.4284-.9702 2.3425.6899 1.4514-.8244 2.9656-2.2758 2.2757-.9141-.4345-2.0033.0167-2.3425.9703-.5384 1.5142-2.67989 1.5142-3.21831 0-.33914-.9536-1.4284-1.4048-2.34247-.9703-1.45148.6899-2.96571-.8243-2.27575-2.2757.43449-.9141-.01669-2.0034-.97028-2.3425-1.51422-.5384-1.51422-2.67994.00001-3.21836.95358-.33914 1.40476-1.42841.97027-2.34248-.68996-1.45148.82427-2.9657 2.27575-2.27575.91407.4345 2.00333-.01669 2.34247-.97026z" clip-rule="evenodd"></path></g></svg>
-				<span class="lable">Settings</span>
-			</button>
+			<div class="chatsheader">
+				<p>Chats</p>
+			</div>
+			<div class="chatslist">
+				<button class="chat">
+					Chat 1
+				</button>
+				<button class="chat">
+					Chat 1
+				</button>
+				<button class="chat">
+					Chat 1
+				</button>
+				<button class="chat">
+					Chat 1
+				</button>
+			</div>
 		</div>
 	</div>
-	<div class="currentChat">
-		<h1>Chat</h1>
+	<div class="middlebar">
+		<div class="currentChat">
+			<h1>Chats</h1>
+		</div>
+		<div class="send">
+			<div class="messageblock">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle-more"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>
+				<input type="text" placeholder="Write a message">
+			</div>
+			<button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+		</div>
 	</div>
 	<div class="rightsidebar">
-		<div class="title">
-			<p>Friends</p>
-			<button><img src="../icon/homepage/friends/addFriends.svg" alt="Add Friends"></button>
+		<div class="outerlayer">
+			<button onclick="addFriend()" class="addfriend">
+				<div class="avatar">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+					<p>Add Friend</p>
+				</div>
+			</button>
 		</div>
 		<div class="friends">
-			<ul>
-				<li>Friend 1</li>
-				<li>Friend 2</li>
-				<li>Friend 3</li>
-				<li>Friend 4</li>
-				<li>Friend 5</li>
-				<li>Friend 6</li>
-				<li>Friend 7</li>
-			</ul>
+			<div class="friendsheader">
+				<p>Friends</p>
+			</div>
+			<div class="friendslist">
+			</div>
 		</div>
 	</div>
-
-
 
 
 </div>

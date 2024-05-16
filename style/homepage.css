@@ -1,6 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
+  background-color: #C5CFDD;
+}
+body button {
+  all: unset;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.3s ease-in-out;
+}
+body button:hover {
+  -webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
 }
 body .container {
   display: flex;
@@ -13,130 +29,261 @@ body .container .leftsidebar {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 280px;
+  width: 340px;
   font-size: 18px;
-  border-right: 2.5px solid lightgray;
 }
-body .container .leftsidebar .account {
+body .container .leftsidebar .top {
+  width: 100%;
   height: 120px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+body .container .leftsidebar .top .account {
+  height: 70px;
+  width: 12ch;
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-evenly;
-  border-bottom: 2.5px solid lightgray;
-}
-body .container .leftsidebar .account img {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-body .container .leftsidebar .account p {
-  all: unset;
-  width: 12ch;
-}
-body .container .leftsidebar .chats {
-  height: calc(100vh - 192px);
-  overflow-y: scroll;
-}
-body .container .leftsidebar .chats::-webkit-scrollbar {
-  width: 10px;
-}
-body .container .leftsidebar .chats::-webkit-scrollbar-thumb {
-  background-color: lightgray;
-  border-radius: 5px;
-}
-body .container .leftsidebar .chats::-webkit-scrollbar-track {
-  background-color: white;
-}
-body .container .leftsidebar .chats ul {
-  all: unset;
-}
-body .container .leftsidebar .chats ul li {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  height: 80px;
-  border-top: 1.25px solid lightgray;
-  border-bottom: 1.25px solid lightgray;
-}
-body .container .leftsidebar .settings {
-  height: 70px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 2.5px solid lightgray;
-}
-body .container .leftsidebar .settings .button {
-  display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 6px 12px;
-  gap: 8px;
-  height: 36px;
-  width: 120px;
-  border: none;
-  background: lightgray;
+  background-color: white;
   border-radius: 20px;
   cursor: pointer;
 }
-body .container .leftsidebar .settings .button:hover .svg-icon {
-  animation: spin 2s linear infinite;
-}
-body .container .leftsidebar .settings .lable {
-  line-height: 20px;
-  font-size: 17px;
-  color: black;
-  font-family: sans-serif;
-  letter-spacing: 1px;
-}
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-body .container .currentChat {
+body .container .leftsidebar .top .account .avatar {
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: calc(100vw - 562px);
-  font-size: 18px;
-  background-color: darkgray;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
+  gap: 10px;
+  margin: 10px;
+}
+body .container .leftsidebar .top .account .avatar p {
+  all: unset;
+  max-width: 12ch;
+  user-select: none;
+}
+body .container .leftsidebar .top .newchat {
+  height: 70px;
+  width: 12ch;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+body .container .leftsidebar .top .newchat .plus {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+}
+body .container .leftsidebar .top .newchat .plus p {
+  all: unset;
+  max-width: 12ch;
+  user-select: none;
+}
+body .container .leftsidebar .chats {
+  height: calc(100vh - 119px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+body .container .leftsidebar .chats .chatsheader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 23px;
+  background-color: white;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-bottom: 11px;
+}
+body .container .leftsidebar .chats .chatsheader p {
+  all: unset;
+  max-width: 5ch;
+  font-size: 16px;
+  user-select: none;
+}
+body .container .leftsidebar .chats .chatslist {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 100%;
+}
+body .container .leftsidebar .chats .chatslist .chat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 20px;
+  height: 70px;
+  margin: 0 21px 11px 21px;
+}
+body .container .leftsidebar .chats .chatslist .chat p {
+  display: flex;
+  align-items: center;
+  height: 30px !important;
+  user-select: none;
+}
+body .container .middlebar {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 680px);
+  height: 100vh;
+}
+body .container .middlebar .currentChat {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  height: calc(100vh - 110px);
+  border-radius: 20px;
+  margin: 26px 0 20px 0;
+}
+body .container .middlebar .currentChat h1 {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+body .container .middlebar .send {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 70px;
+  background-color: white;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+  color: gray;
+}
+body .container .middlebar .send button {
+  all: unset;
+  cursor: pointer;
+  height: 24px;
+}
+body .container .middlebar .send .messageblock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 10px;
+}
+body .container .middlebar .send .messageblock input {
+  all: unset;
+  width: 80%;
+  height: 100%;
+  font-size: 20px;
 }
 body .container .rightsidebar {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 280px;
+  width: 340px;
   font-size: 18px;
-  border-left: 2.5px solid lightgray;
 }
-body .container .rightsidebar .title {
+body .container .rightsidebar .outerlayer {
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+body .container .rightsidebar .outerlayer .addfriend {
+  height: 70px;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 20px;
+  margin: 0 20px;
+  cursor: pointer;
+}
+body .container .rightsidebar .outerlayer .addfriend .avatar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 10px;
+}
+body .container .rightsidebar .outerlayer .addfriend .avatar p {
+  all: unset;
+  max-width: 12ch;
+  user-select: none;
+}
+body .container .friends {
+  height: calc(100vh - 119px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+body .container .friends .friendsheader {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
-  border-bottom: 2.5px solid lightgray;
-  margin-left: 10px;
+  justify-content: flex-start;
+  margin-left: 23px;
+  background-color: white;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-bottom: 11px;
 }
-body .container .rightsidebar .friends ul {
+body .container .friends .friendsheader p {
   all: unset;
+  max-width: 5ch;
+  font-size: 16px;
+  user-select: none;
 }
-body .container .rightsidebar .friends ul li {
+body .container .friends .friendslist {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
+  width: 100%;
+  overflow-y: scroll;
+}
+body .container .friends .friendslist::-webkit-scrollbar {
+  display: none;
+}
+body .container .friends .friendslist .friend {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  height: 40px;
-  border-top: 1.25px solid lightgray;
-  border-bottom: 1.25px solid lightgray;
+  justify-content: center;
+  background-color: white;
+  border-radius: 20px;
+  height: 70px;
+  margin: 0 21px 11px 21px;
+  gap: 10px;
+}
+body .container .friends .friendslist .friend p {
+  display: flex;
+  align-items: center;
+  height: 30px !important;
+  user-select: none;
+}
+body .container .friends .friendslist .friend span {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: gray;
+  user-select: none;
 }
 body .ProfilePictureOverlay {
   display: flex;
@@ -208,42 +355,47 @@ body #settingsOverlay #settingsContainer #settingsrest #title {
   font-size: 24px;
   margin: 0 0 0 10px;
 }
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload {
-  height: 200px;
-  width: 300px;
+body #friendOverlay {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+body #friendOverlay #friendContainer {
+  display: flex;
+  flex-direction: row;
+  width: 80vw;
+  height: 80vh;
+  border-radius: 20px;
+  background-color: white;
+}
+body #friendOverlay #friendContainer #friendrest {
+  width: 100%;
+  height: 100%;
+  background-color: lightgray;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+}
+body #friendOverlay #friendContainer #friendrest button {
+  all: unset;
   cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed black;
-  background-color: darkgray;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-top: 20px;
-  margin-left: 10px;
+  margin-left: auto;
+  margin-right: 10px;
+  height: 50px;
 }
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+body #friendOverlay #friendContainer #friendrest button img {
+  width: 40px;
 }
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload .icon svg {
-  height: 80px;
-  fill: black;
+body #friendOverlay #friendContainer #friendrest #title {
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  margin: 0 0 0 10px;
 }
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload .text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload .text span {
-  font-weight: 400;
-  color: black;
-}
-body #settingsOverlay #settingsContainer #settingsrest .custum-file-upload input {
-  display: none;
+body #friendOverlay #friendContainer #friendrest #friendIDinput {
+  margin: 0 0 0 10px;
 }
 
 /*# sourceMappingURL=homepage.css.map */

@@ -1,6 +1,26 @@
+@use "_variables";
+
+* {
+	box-sizing: border-box;
+}
+
 body {
 	margin: 0;
 	padding: 0;
+	background-color: variables.$bg-color;
+
+	button {
+		all: unset;
+		cursor: pointer;
+		user-select: none;
+		transition: 0.3s ease-in-out;
+
+		&:hover {
+			-webkit-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
+			-moz-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
+			box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
+		}
+	}
 
 
 	.container {
@@ -14,171 +34,303 @@ body {
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
-			width: 280px;
+			width: 340px;
 			font-size: 18px;
-			border-right: 2.5px solid #D3D3D3FF;
 
-			.account {
+			.top {
+				width: 100%;
 				height: 120px;
-				display: inline-flex;
+				display: flex;
 				flex-direction: row;
-				align-items: center;
 				justify-content: space-evenly;
-				border-bottom: 2.5px solid #D3D3D3FF;
+				align-items: center;
 
-				img	{
-					width: 75px;
-					height: 75px;
-					border-radius: 50%;
+				.account {
+					height: 70px;
+					width: 12ch;
+					display: inline-flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					background-color: white;
+					border-radius: 20px;
 					cursor: pointer;
+
+					.avatar {
+						display: flex;
+						flex-direction: row;
+						justify-content: center;
+						align-items: center;
+						gap: 10px;
+						margin: 10px;
+
+						p {
+							all: unset;
+							max-width: 12ch;
+							user-select: none;
+						}
+					}
 				}
 
-				p {
-					all: unset;
+				.newchat {
+					height: 70px;
 					width: 12ch;
+					display: inline-flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					background-color: white;
+					border-radius: 20px;
+					cursor: pointer;
+
+					.plus {
+						display: flex;
+						flex-direction: row;
+						justify-content: center;
+						align-items: center;
+						gap: 10px;
+						margin: 10px;
+
+						p {
+							all: unset;
+							max-width: 12ch;
+							user-select: none;
+						}
+					}
 				}
 			}
 
 			.chats {
-				height: calc(100vh - 192px);
-				overflow-y: scroll;
-
-				&::-webkit-scrollbar {
-					width: 10px;
-				}
-
-				&::-webkit-scrollbar-thumb {
-					background-color: #D3D3D3FF;
-					border-radius: 5px;
-
-				}
-
-				&::-webkit-scrollbar-track {
-					background-color: white;
-				}
-
-				ul {
-					all: unset;
-					li {
-						display: flex;
-						flex-direction: column;
-						justify-content: space-around;
-						align-items: center;
-						height: 80px;
-						border-top: 1.25px solid #D3D3D3FF;
-						border-bottom: 1.25px solid #D3D3D3FF;
-					}
-				}
-			}
-
-			.settings {
-				height: 70px;
+				height: calc(100vh - 119px);
 				display: flex;
 				flex-direction: column;
-				justify-content: space-around;
-				align-items: center;
-				border-top: 2.5px solid #D3D3D3FF;
+				width: 100%;
 
 
-				.button {
+				.chatsheader {
 					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: flex-start;
+					margin-left: 23px;
+					background-color: white;
+					width: fit-content;
+					padding: 5px 10px;
+					border-radius: 10px;
+					margin-bottom: 11px;
+
+					p {
+						all: unset;
+						max-width: 5ch;
+						font-size: 16px;
+						user-select: none;
+					}
+				}
+
+				.chatslist {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-evenly;
+					width: 100%;
+
+					.chat {
+						display: flex;
+						flex-direction: row;
+						align-items: center;
+						justify-content: center;
+						background-color: white;
+						border-radius: 20px;
+						height: 70px;
+						margin: 0 21px 11px 21px;
+
+
+						p {
+							display: flex;
+							align-items: center;
+							height: 30px !important;
+							user-select: none;
+						}
+					}
+
+				}
+			}
+		}
+
+		.middlebar {
+			display: flex;
+			flex-direction: column;
+			width: calc(100vw - 680px);
+			height: 100vh;
+
+			.currentChat {
+				display: flex;
+				flex-direction: column;
+				background-color: white;
+				height: calc(100vh - 110px);
+				border-radius: 20px;
+				margin: 26px 0 20px 0;
+
+				h1 {
+					display: flex;
+					width: 100%;
+					height: 100%;
 					justify-content: center;
 					align-items: center;
-					padding: 6px 12px;
-					gap: 8px;
-					height: 36px;
-					width: 120px;
-					border: none;
-					background: #D3D3D3FF;
-					border-radius: 20px;
+				}
+			}
+
+			.send {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
+				height: 70px;
+				background-color: white;
+				border-radius: 20px;
+				margin-bottom: 20px;
+				padding: 0 10px;
+				color: gray;
+
+				button {
+					all: unset;
 					cursor: pointer;
-
-					&:hover .svg-icon {
-						animation: spin 2s linear infinite;
-					}
+					height: 24px;
 				}
 
-				.lable {
-					line-height: 20px;
-					font-size: 17px;
-					color: black;
-					font-family: sans-serif;
-					letter-spacing: 1px;
-				}
+				.messageblock {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					width: 100%;
+					height: 100%;
+					gap: 10px;
 
-
-				@keyframes spin {
-					0% {
-						transform: rotate(0deg);
-					}
-
-					100% {
-						transform: rotate(360deg);
+					input {
+						all: unset;
+						width: 80%;
+						height: 100%;
+						font-size: 20px;
 					}
 				}
 			}
 		}
 
-		.currentChat {
-			display: flex;
-			flex-direction: column;
-			height: 100vh;
-			width: calc(100vw - 562px);
-			font-size: 18px;
-			background-color: darkgray;
-			justify-content: center;
-			align-items: center;
-		}
 
 		.rightsidebar {
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
-			width: 280px;
+			width: 340px;
 			font-size: 18px;
-			border-left: 2.5px solid #D3D3D3FF;
 
-			.title {
+			.outerlayer {
+				width: 100%;
+				height: 120px;
 				display: flex;
 				flex-direction: row;
+				justify-content: space-evenly;
 				align-items: center;
-				gap: 10px;
-				border-bottom: 2.5px solid #D3D3D3FF;
-				margin-left: 10px;
-			}
 
-			.friends {
-				//overflow-y: scroll;
-				//
-				//&::-webkit-scrollbar {
-				//	width: 10px;
-				//}
-				//
-				//&::-webkit-scrollbar-thumb {
-				//	background-color: #D3D3D3FF;
-				//	border-radius: 5px;
-				//
-				//}
-				//
-				//&::-webkit-scrollbar-track {
-				//	background-color: white;
-				//}
+				.addfriend {
+					height: 70px;
+					width: 100%;
+					display: inline-flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					background-color: white;
+					border-radius: 20px;
+					margin: 0 20px;
+					cursor: pointer;
 
-				ul {
-					all: unset;
-					li {
+					.avatar {
 						display: flex;
-						flex-direction: column;
-						justify-content: space-around;
+						flex-direction: row;
+						justify-content: center;
 						align-items: center;
-						height: 40px;
-						border-top: 1.25px solid #D3D3D3FF;
-						border-bottom: 1.25px solid #D3D3D3FF;
+						gap: 10px;
+						margin: 10px;
+
+						p {
+							all: unset;
+							max-width: 12ch;
+							user-select: none;
+						}
 					}
 				}
 			}
-
 		}
+
+		.friends {
+			height: calc(100vh - 119px);
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+
+
+			.friendsheader {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: flex-start;
+				margin-left: 23px;
+				background-color: white;
+				width: fit-content;
+				padding: 5px 10px;
+				border-radius: 10px;
+				margin-bottom: 11px;
+
+				p {
+					all: unset;
+					max-width: 5ch;
+					font-size: 16px;
+					user-select: none;
+				}
+			}
+
+			.friendslist {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-evenly;
+				width: 100%;
+				overflow-y: scroll;
+
+				&::-webkit-scrollbar {
+					display: none;
+				}
+
+
+				.friend {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					justify-content: center;
+					background-color: white;
+					border-radius: 20px;
+					height: 70px;
+					margin: 0 21px 11px 21px;
+					gap: 10px;
+
+					p {
+						display: flex;
+						align-items: center;
+						height: 30px !important;
+						user-select: none;
+					}
+
+					span {
+						display: flex;
+						align-items: center;
+						font-size: 16px;
+						color: gray;
+						user-select: none;
+					}
+				}
+
+			}
+		}
+
 
 	}
 
@@ -258,52 +410,58 @@ body {
 					font-size: 24px;
 					margin: 0 0 0 10px;
 				}
-
-				.custum-file-upload {
-					height: 200px;
-					width: 300px;
-					display: flex;
-					flex-direction: column;
-					gap: 20px;
-					cursor: pointer;
-					align-items: center;
-					justify-content: center;
-					border: 2px dashed black;
-					background-color: darkgray;
-					padding: 1.5rem;
-					border-radius: 10px;
-					margin-top: 20px;
-					margin-left: 10px;
-				}
-
-				.custum-file-upload .icon {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-
-				.custum-file-upload .icon svg {
-					height: 80px;
-					fill: black;
-				}
-
-				.custum-file-upload .text {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-				}
-
-				.custum-file-upload .text span {
-					font-weight: 400;
-					color: black;
-				}
-
-				.custum-file-upload input {
-					display: none;
-				}
-
 			}
 		}
 	}
 
+	#friendOverlay {
+		display: flex;
+		width: 100vw;
+		height: 100vh;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+
+		#friendContainer {
+			display: flex;
+			flex-direction: row;
+			width: 80vw;
+			height: 80vh;
+			border-radius: 20px;
+			background-color: white;
+
+			#friendrest {
+				width: 100%;
+				height: 100%;
+				background-color: lightgray;
+				border-radius: 20px;
+				display: flex;
+				flex-direction: column;
+
+				button {
+					all: unset;
+					cursor: pointer;
+					margin-left: auto;
+					margin-right: 10px;
+					height: 50px;
+
+					img {
+						width: 40px;
+					}
+				}
+
+
+				#title {
+					font-family: 'Poppins', sans-serif;
+					font-size: 24px;
+					margin: 0 0 0 10px;
+				}
+
+
+				#friendIDinput {
+					margin: 0 0 0 10px;
+				}
+			}
+		}
+	}
 }
