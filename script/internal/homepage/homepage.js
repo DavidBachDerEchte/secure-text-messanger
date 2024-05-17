@@ -288,7 +288,6 @@ function getFriends() {
                 }
             }
 
-            //jalevink@web.de
         })
         .catch(error => {
             console.error('Error getting user data:', error);
@@ -323,7 +322,7 @@ function deleteFriend(friendID, friendUsername) {
 
 function logout() {
     sessionStorage.clear();
-    window.location = "../login.html";
+    window.location = "../index.html";
 }
 
 
