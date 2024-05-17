@@ -204,14 +204,13 @@ body .container .rightsidebar .outerlayer {
 }
 body .container .rightsidebar .outerlayer .addfriend {
   height: 70px;
-  width: 100%;
+  width: 12ch;
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   background-color: white;
   border-radius: 20px;
-  margin: 0 20px;
   cursor: pointer;
 }
 body .container .rightsidebar .outerlayer .addfriend .avatar {
@@ -262,6 +261,7 @@ body .container .friends .friendslist::-webkit-scrollbar {
   display: none;
 }
 body .container .friends .friendslist .friend {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -284,6 +284,52 @@ body .container .friends .friendslist .friend span {
   font-size: 16px;
   color: gray;
   user-select: none;
+}
+body .container .friends .friendslist .friend:hover .deletebtn {
+  opacity: 1;
+}
+body .container .friends .friendslist .friend:has(.deletebtn:hover) {
+  box-shadow: unset;
+}
+body .container .friends .friendslist .friend:has(.deletebtn:hover) .deletebtn {
+  background-color: black;
+}
+body .container .friends .friendslist .friend .deletebtn {
+  opacity: 0;
+  box-shadow: unset;
+  mask-image: url("../icon/create&login/X.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 32px;
+  background-color: #C5CFDD;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 19px;
+  cursor: pointer;
+  border-radius: 10px;
+  text-transform: uppercase;
+  width: 32px;
+  height: 32px;
+}
+body .container .friends .friendslist .friend .deletebtn span {
+  transition: color 0.3s ease-in-out;
+}
+body .container .friends .friendslist .friend .deletebtn span.hidden {
+  display: none;
+}
+body .container .friends .friendslist .friend .deletebtn.active {
+  opacity: 1;
+  mask-image: unset;
+  width: fit-content;
+  padding: 6px 10px;
+  right: 13px;
+}
+body .container .friends .friendslist .friend .deletebtn.active:hover {
+  background-color: #ff3737;
+}
+body .container .friends .friendslist .friend .deletebtn.active:hover span {
+  color: white;
 }
 body .ProfilePictureOverlay {
   display: flex;

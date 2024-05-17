@@ -12,13 +12,12 @@
 		const FriendID = urlParams.get('friendID');
 		const senderusername = urlParams.get('senderusername');
 
-		console.log(urlParams);
-
 		sessionStorage.setItem("SenderUserID", userID);
 		sessionStorage.setItem("UserID", FriendID);
 		sessionStorage.setItem("senderusername", senderusername);
 
-		window.location.href = "../confirmFriend.html";
+		// console.log(window.location);
+		window.location.href = "./confirmFriend.html";
 
 
 	})

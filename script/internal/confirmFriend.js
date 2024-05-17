@@ -45,7 +45,10 @@ function acceptFriend() {
             return response.json();
         })
         .then(data => {
-            console.log(data);
+            if (data.success === true) {
+                sessionStorage.clear();
+                window.location.href = "../index.html";
+            }
         })
         .catch(error => {
             console.error('Error getting user data:', error);
@@ -68,6 +71,7 @@ function declineFriend() {
         })
         .then(data => {
             if (data.success === true) {
+                sessionStorage.clear();
                 window.location.href = "../index.html";
             }
         })

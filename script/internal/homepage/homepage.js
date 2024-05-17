@@ -192,11 +192,13 @@ function addfriendtoaccount() {
                 }
                 return response.json();
             })
-            .then(data =>{
+            .then(data => {
                 console.log(data);
-                setTimeout(function () {
-                    getFriends();
-                },1000);
+                if (data.error !== 'Friend already added' && data.error !== 'You cannot add yourself as a friend') {
+                    setTimeout(function () {
+                        getFriends();
+                    }, 1000);
+                }
             })
             .catch(error => {
                 console.error('Error getting user data:', error);
@@ -222,8 +224,16 @@ function getFriends() {
             for (let i = 0; i < data.friends.length; i++) {
                 if (data.friends[i].friendsID) {
                     let parent = document.getElementsByClassName("friendslist")[0];
-                    let friend = document.createElement("div");
+                    parent.firstElementChild.remove()
+
+
+                    let friend = document.createElement("button");
                     friend.setAttribute("class", "friend");
+                    friend.onclick = function () {
+                        // TODO: Open PTP Chat
+                    }
+
+
                     let friendName = document.createElement("p");
                     friendName.textContent = data.friends[i].friendsUsername;
                     friend.appendChild(friendName);
@@ -235,13 +245,88 @@ function getFriends() {
                     }
 
                     parent.appendChild(friend);
+
+                    if (data.friends[i].friendsStatus !== "Pending") {
+                        let deletebtn = document.createElement("button");
+                        deletebtn.setAttribute("class", "deletebtn");
+                        deletebtn.appendChild(document.createElement("span"));
+                        deletebtn.firstElementChild.textContent = "Delete?";
+                        deletebtn.firstElementChild.classList.add("hidden");
+
+                        deletebtn.addEventListener("click", function () {
+                            deletebtn.firstElementChild.classList.remove("hidden");
+                            deletebtn.classList.add("active");
+                        })
+
+                        deletebtn.onclick = function () {
+                            this.firstElementChild.classList.remove("hidden");
+                            this.classList.add("active");
+
+                            deletebtn.firstElementChild.onclick = function () {
+                                if (deletebtn.classList.contains("active")) {
+                                    deleteFriend(data.friends[i].friendsID, data.friends[i].friendsUsername);
+                                }
+                            }
+                        }
+                        friend.appendChild(deletebtn);
+
+                        friend.addEventListener("mouseleave", function () {
+                            deletebtn.firstElementChild.classList.add("hidden");
+                            deletebtn.classList.remove("active");
+                        })
+                    }
+                } else {
+
+                    let parent = document.getElementsByClassName("friendslist")[0];
+                    let friend = document.createElement("div");
+                    friend.setAttribute("class", "friend");
+
+                    let friendName = document.createElement("p");
+                    friendName.textContent = 'No Friends available';
+                    friend.appendChild(friendName);
+                    parent.appendChild(friend);
                 }
             }
+
+            //jalevink@web.de
         })
         .catch(error => {
             console.error('Error getting user data:', error);
         });
 }
+
+function deleteFriend(friendID, friendUsername) {
+    fetch('http://localhost:3000/deleteFriend', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            myuserID: sessionStorage.getItem("UserID"),
+            friendID: friendID,
+            friendUsername: friendUsername
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error getting user data:', error);
+        });
+}
+
+function logout() {
+    sessionStorage.clear();
+    window.location = "../login.html";
+}
+
+
 
 
 

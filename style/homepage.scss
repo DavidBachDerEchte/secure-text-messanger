@@ -16,9 +16,9 @@ body {
 		transition: 0.3s ease-in-out;
 
 		&:hover {
-			-webkit-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
-			-moz-box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
-			box-shadow: 0 5px 10px 0 rgba(0,0,0,0.25);
+			-webkit-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+			-moz-box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
+			box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.25);
 		}
 	}
 
@@ -234,14 +234,13 @@ body {
 
 				.addfriend {
 					height: 70px;
-					width: 100%;
+					width: 12ch;
 					display: inline-flex;
 					flex-direction: row;
 					align-items: center;
 					justify-content: center;
 					background-color: white;
 					border-radius: 20px;
-					margin: 0 20px;
 					cursor: pointer;
 
 					.avatar {
@@ -300,8 +299,8 @@ body {
 					display: none;
 				}
 
-
 				.friend {
+					position: relative;
 					display: flex;
 					flex-direction: row;
 					align-items: center;
@@ -325,6 +324,65 @@ body {
 						font-size: 16px;
 						color: gray;
 						user-select: none;
+					}
+
+					&:hover {
+						.deletebtn {
+							opacity: 1;
+						}
+					}
+
+					&:has(.deletebtn:hover) {
+						box-shadow: unset;
+
+						.deletebtn {
+							background-color: black;
+						}
+					}
+
+					.deletebtn {
+						opacity: 0;
+						box-shadow: unset;
+						mask-image: url("../icon/create&login/X.svg");
+						mask-repeat: no-repeat;
+						mask-position: center;
+						mask-size: 32px;
+						background-color: variables.$bg-color;
+
+						position: absolute;
+						top: 50%;
+						transform: translateY(-50%);
+						right: 19px;
+						cursor: pointer;
+						border-radius: 10px;
+						text-transform: uppercase;
+
+						width: 32px;
+						height: 32px;
+
+						span{
+							transition: color 0.3s ease-in-out;
+							&.hidden {
+								display: none;
+							}
+						}
+
+						&.active {
+							opacity: 1;
+							mask-image: unset;
+
+							width: fit-content;
+							padding: 6px 10px;
+							right: 13px;
+
+							&:hover {
+								background-color: #ff3737;
+
+								span {
+									color: white;
+								}
+							}
+						}
 					}
 				}
 
