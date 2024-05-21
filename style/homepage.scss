@@ -47,7 +47,7 @@ body {
 
 				.account {
 					height: 70px;
-					width: 12ch;
+					width: 13ch;
 					display: inline-flex;
 					flex-direction: row;
 					align-items: center;
@@ -66,7 +66,6 @@ body {
 
 						p {
 							all: unset;
-							max-width: 12ch;
 							user-select: none;
 						}
 					}
@@ -74,7 +73,7 @@ body {
 
 				.newchat {
 					height: 70px;
-					width: 12ch;
+					width: 13ch;
 					display: inline-flex;
 					flex-direction: row;
 					align-items: center;
@@ -93,7 +92,6 @@ body {
 
 						p {
 							all: unset;
-							max-width: 12ch;
 							user-select: none;
 						}
 					}
@@ -164,18 +162,38 @@ body {
 
 			.currentChat {
 				display: flex;
-				flex-direction: column;
+				flex-direction: column-reverse;
 				background-color: white;
 				height: calc(100vh - 110px);
 				border-radius: 20px;
 				margin: 26px 0 20px 0;
+				width: 100%;
+				overflow-y: auto;
 
-				h1 {
+				.message {
 					display: flex;
-					width: 100%;
-					height: 100%;
-					justify-content: center;
-					align-items: center;
+					width: fit-content;
+					max-width: 80%;
+					height: fit-content;
+					padding: 10px;
+					border-radius: 10px;
+					margin: 10px 20px;
+					word-wrap: break-word;
+
+					p {
+						margin: 0;
+						padding: 0;
+					}
+				}
+
+				.receiveMessage {
+					background-color: lightgray;
+					align-self: flex-start;
+				}
+
+				.sendMessage {
+					background-color: lightblue;
+					align-self: flex-end;
 				}
 			}
 
@@ -234,7 +252,7 @@ body {
 
 				.addfriend {
 					height: 70px;
-					width: 12ch;
+					width: 13ch;
 					display: inline-flex;
 					flex-direction: row;
 					align-items: center;
@@ -253,7 +271,6 @@ body {
 
 						p {
 							all: unset;
-							max-width: 12ch;
 							user-select: none;
 						}
 					}

@@ -2,15 +2,15 @@ const express = require('express');
 const mysql = require('mysql2');
 const crypto = require('crypto'); // Import crypto module
 const {urlencoded} = require('express');
-const bodyParser = require("body-parser");
 const dotenv = require('dotenv');
 dotenv.config();
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
-const {fix} = require("nodemailer-smtp-transport/.eslintrc");
-
-
+const {WebSocketServer} = require("ws");
+// const {fix} = require("nodemailer-smtp-transport/.eslintrc");
 const app = express();
+const webSocketServer = require('ws').Server;
+
 const port = 3000;
 
 // Encryption and decryption keys (should be securely stored in production)
@@ -22,6 +22,12 @@ const loginKey = crypto.createHash('sha256').update(String(loginEncryptionKey)).
 
 const rememberEncryptionKey = process.env.REMEMBER_ENCRYPT_KEY;
 const rememberKey = crypto.createHash('sha256').update(String(rememberEncryptionKey)).digest('base64').substr(0, 32);
+
+const homepageencrytionkey = process.env.HOMEPAGE_ENCRYPT_KEY;
+const HomepageKey = crypto.createHash('sha256').update(String(homepageencrytionkey)).digest('base64').substr(0, 32);
+
+const chatencryptkey = process.env.CHAT_ENCRYPT_KEY;
+const chatKey = crypto.createHash('sha256').update(String(chatencryptkey)).digest('base64').substr(0, 32);
 
 const connection = mysql.createConnection({
     host: process.env.SQL_HOST,
@@ -42,7 +48,7 @@ const transporter = nodemailer.createTransport(smtpTransport({
         rejectUnauthorized: false
     }
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(urlencoded({extended: true}));
 
 // CORS setup
@@ -112,19 +118,24 @@ function rememberdecrypt(text) {
     return decrypted.toString();
 }
 
-process.on("exit", function () {
-    console.log("Exiting...");
+// Handle encryption
+function chatencrypt(text) {
+    const iv = crypto.randomBytes(16); // Generate a new IV for each encryption
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(chatKey), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return {iv: iv.toString('hex'), encryptedData: encrypted.toString('hex')};
+}
 
-    // Restart the Node.js process
-    require("child_process").spawn(process.argv[0], process.argv.slice(1), {
-        detached: true,
-        stdio: "inherit"
-    });
-});
-
-setTimeout(() => {
-    process.exit();
-}, 720000);
+// Handle decryption
+function chatdecrypt(text) {
+    let iv = Buffer.from(text.iv, 'hex');
+    let encryptedText = Buffer.from(text.encryptedData, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(chatKey), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
 
 connection.connect(err => {
     if (err) {
@@ -132,219 +143,6 @@ connection.connect(err => {
         return;
     }
     console.log('Connected to database');
-});
-
-// Route to insert a new user
-app.post('/joinChat', (req, res) => {
-    const {chatcode, UserID} = req.body;
-
-    if (!UserID) {
-        return res.status(400).json({error: 'UserID is required'});
-    }
-
-    if (!chatcode) {
-        return res.status(400).json({error: 'Chatcode is required'});
-    }
-
-
-    const checkUserQuery = `SELECT *
-                            FROM Usernames;`;
-    connection.query(checkUserQuery, (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({error: 'Database error'});
-        }
-
-        if (results.userID === UserID && results.chatID === chatcode) {
-            return res.json({message: 'User already exists'});
-        }
-
-        const insertUserQuery = `UPDATE Usernames
-                                 SET chatID = '${chatcode}'
-                                 WHERE userID = \`${UserID}\`;`;
-        connection.query(insertUserQuery, (err) => {
-            if (err) {
-                console.error('Error creating user:', err);
-                return res.status(500).json({error: 'Error creating user'});
-            }
-
-            const getUserQuery = `SELECT usernames
-                                  FROM Usernames
-                                  WHERE userID = \`${UserID}\`;`;
-            connection.query(getUserQuery, (err, results) => {
-                if (err) {
-                    console.error('Error getting user:', err);
-                    return res.status(500).json({error: 'Error getting user'});
-                }
-
-                let Usernamearray = JSON.parse(results[0].usernames)
-                let returnedUsername = decrypt(Usernamearray);
-
-                return res.json({message: 'User created successfully', username: returnedUsername});
-            })
-        });
-    });
-});
-
-// Route to create a new chat
-app.post('/createChat', (req, res) => {
-    let UserID = req.body.UserID;
-    let newChatcode = '';
-    let characters = '0123456789ABCDEFGHIJKLMN OPQRSTUVWXYZ';
-
-    for (let a = 0; a < 6; a++) {
-        let randomIndex = Math.floor(Math.random() * characters.length);
-        newChatcode += characters.charAt(randomIndex);
-    }
-
-    const checkTablesForCreate = `SHOW TABLES;`;
-    connection.query(checkTablesForCreate, (err, results) => {
-        if (err) {
-            return res.status(500).send({error: 'Database not found'});
-        }
-
-        // Check if newChatcode exists
-        const tableExists = results.some(result => result.Tables_in_david_db === newChatcode);
-
-        if (tableExists) {
-            return res.send({message: 'Table already exists'});
-        }
-
-        const createTableQuery = `CREATE TABLE ${newChatcode}
-                                  (
-                                      messagesender varchar(2048),
-                                      message       varchar(2048)
-                                  )`;
-        connection.query(createTableQuery, (err, results) => {
-            if (err) {
-                return res.status(500).send({error: 'Error creating Table'});
-            }
-
-            const createUserQuery = `UPDATE Usernames
-                                     SET chatID = '${newChatcode}'
-                                     WHERE userID = \`${UserID}\`;`;
-            connection.query(createUserQuery, (err) => {
-                if (err) {
-                    return res.status(500).json({error: 'Error updating user'});
-                }
-
-                const getUsernamesQuery = `SELECT usernames
-                                           FROM Usernames
-                                           WHERE userID = \`${UserID}\`;`;
-                connection.query(getUsernamesQuery, (err, results) => {
-                    if (err) {
-                        return res.status(500).json({error: 'Error getting usernames'});
-                    }
-
-
-                    let Usernamearray = JSON.parse(results[0].usernames);
-                    let returnedUsername = decrypt(Usernamearray);
-
-                    return res.send({code: `${newChatcode}`, usernames: returnedUsername});
-                })
-            })
-
-        });
-    });
-});
-
-// Route to send a message
-app.post('/sendMessage', (req, res) => {
-    let userID = req.body.userID;
-    let encryptedMessage = encrypt(req.body.message);
-    let Inputchatcode = req.body.chatcode;
-
-    if (!userID) {
-        return res.status(400).send({error: 'userID is required'});
-    }
-
-    if (!encryptedMessage) {
-        return res.status(400).send({error: 'Message is required'});
-    }
-
-    if (!Inputchatcode) {
-        return res.status(400).json({error: 'Chat code is required'});
-    }
-
-    const getUsernameQuery = `SELECT usernames
-                              FROM Usernames
-                              WHERE userID = \`${userID}\`;`;
-    connection.query(getUsernameQuery, (err, results) => {
-        if (err) {
-            console.error('Error getting username:', err);
-            return res.status(500).json({error: 'Database error'});
-        }
-
-        // Insert message into database
-        const insertQuery = `INSERT INTO ${Inputchatcode} (messagesender, message)
-                             VALUES ('${results}', '${JSON.stringify((encryptedMessage))}');`;
-        connection.query(insertQuery, (err, results) => {
-            if (err) {
-                console.error('Error inserting message into database:', err);
-                return res.status(500).json({error: 'Database error'});
-            }
-            return res.json({success: true});
-        });
-    })
-
-
-});
-
-// Route to get chat history
-app.post('/getChatHistory', (req, res) => {
-    let inputChatcode = req.body.chatcode;
-
-    if (!inputChatcode) {
-        return res.status(400).json({error: 'Chat code is required'});
-    }
-
-    const selectQuery = `SELECT *
-                         FROM ${inputChatcode}`;
-    connection.query(selectQuery, (err, results) => {
-        if (err) {
-            console.error('Error selecting messages from database:', err);
-            return res.status(500).json({error: 'Database error'});
-        }
-
-        let decryptedMessages = [];
-        let sendBack;
-
-        for (let i = 0; i < results.length; i++) {
-            let result = results[i];
-            let decryptedMessageSender = result.messagesender;
-            let decryptedMessage = result.message;
-
-
-            if (i === results.length - 1) {
-                sendBack = true;
-            }
-
-            // Check if both messagesender and message are empty, if so, skip this entry
-            if (decryptedMessageSender === '' && decryptedMessage === '') {
-                continue;
-            }
-
-            let senderarray = JSON.parse(decryptedMessageSender);
-            let messagearray = JSON.parse(decryptedMessage);
-            // Check if the decryptedMessageSender and decryptedMessage are not undefined or null
-            if (decryptedMessageSender && decryptedMessage) {
-                let sender = decrypt(senderarray);
-                let message = decrypt(messagearray);
-                console.log(`Sender: ${sender}, Message: ${message}`);
-                decryptedMessages.push({sender: sender, message: message});
-                console.log(decryptedMessages);
-
-            } else {
-                // Handle the case where either decryptedMessageSender or decryptedMessage is missing
-                console.error('Invalid data retrieved from the database:', result);
-                // You may choose to handle this differently, like logging an error or skipping this message
-            }
-        }
-
-        if (sendBack === true) {
-            return res.json({messages: decryptedMessages});
-        }
-    });
 });
 
 app.post('/createLogin', (req, res) => {
@@ -423,7 +221,8 @@ app.post('/createLogin', (req, res) => {
                                                  friendsID       VARCHAR(8),
                                                  friendsUsername VARCHAR(255),
                                                  username        VARCHAR(255),
-                                                 friendsStatus   VARCHAR(255)
+                                                 friendsStatus   VARCHAR(255),
+                                                 chats           VARCHAR(16)
                                              );`
                     connection.query(createUserTable, (err, results) => {
                         if (err) {
@@ -431,8 +230,8 @@ app.post('/createLogin', (req, res) => {
                             return res.status(500).json({error: 'Database error'});
                         }
 
-                        const insertIntoUserTable = `INSERT INTO \`${newUserID}\` (friendsID, friendsUsername, username, friendsStatus)
-                                                     VALUES ('', '', '${JSON.stringify(username)}', '');`
+                        const insertIntoUserTable = `INSERT INTO \`${newUserID}\` (friendsID, friendsUsername, username, friendsStatus, chats)
+                                                     VALUES ('', '', '${JSON.stringify(username)}', '', '');`
                         connection.query(insertIntoUserTable, (err, results) => {
                             if (err) {
                                 console.error('Error inserting into user table:', err);
@@ -797,148 +596,156 @@ app.post('/addFriend', (req, res) => {
         return res.json({error: 'Invalid Friend UserID'});
     }
 
-
-    const getFriendfromMyTable = `SELECT *
-                                  FROM \`${myuserID}\`;`;
-    connection.query(getFriendfromMyTable, (err, results) => {
-        if (err) {
-            console.error('Error getting the database:', err);
-            return res.status(500).json({error: 'Database error'});
-        }
-
-        for (let i = 0; i < results.length; i++) {
-            if (results[i].friendsID === friendIDCode) {
-                return res.json({error: 'Friend already added'});
-            } else {
-                if (results[i].friendsID !== friendIDCode) {
-                    const getFriendIDQuery = `SELECT *
-                                              FROM Usernames;`;
-                    connection.query(getFriendIDQuery, (err, results) => {
-                        if (err) {
-                            console.error('Error getting the database:', err);
-                            return res.status(500).json({error: 'Database error'});
-                        }
-
-                        for (let i = 0; i < results.length; i++) {
-                            if (results[i].userID === friendIDCode) {
-                                if (decrypt(JSON.parse(results[i].usernames)) === friendUsername) {
-                                    let friendEmail = decrypt(JSON.parse(results[i].emails));
-                                    let senderusername = decrypt(JSON.parse(results[i].usernames));
-                                    const friendStatus = 'Pending';
-                                    let confirmationlink = `http://localhost:63342/secure-text-messanger-dev-node/html/getInfoViaUrl.html/?userID=${encodeURIComponent(myuserID)}&friendID=${encodeURIComponent(friendIDCode)}&senderusername=${encodeURIComponent(senderusername)}`
-                                    const addFriendQuery = `INSERT INTO \`${myuserID}\` (friendsID, friendsUsername, username, friendsStatus)
-                                                            VALUES (${friendIDCode},
-                                                                    '${JSON.stringify(encrypt(friendUsername))}', '',
-                                                                    'Pending');`;
-                                    connection.query(addFriendQuery, (err, results) => {
-                                        if (err) {
-                                            console.error('Error adding friend:', err);
-                                            return res.status(500).json({error: 'Database error'});
-                                        }
-                                    })
-
-                                    const mailOptions = {
-                                        from: `Secure Text Messenger <kontakt@davidbach.eu>`,
-                                        to: friendEmail,
-                                        subject: 'Friend Request',
-                                        html: `
-                                            <!DOCTYPE html>
-                                            <html lang="en">
-                                            <head>
-                                                <meta charset="UTF-8">
-                                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                                <title>Friend Request</title>
-                                                <style>
-                                                    body {
-                                                        font-family: Arial, sans-serif;
-                                                        background-color: #f4f4f4;
-                                                        margin: 0;
-                                                        padding: 0;
-                                                        color: #333333;
-                                                    }
-                                                    .container {
-                                                        width: 100%;
-                                                        max-width: 600px;
-                                                        margin: 0 auto;
-                                                        background-color: #ffffff;
-                                                        border-radius: 8px;
-                                                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                                                        overflow: hidden;
-                                                    }
-                                                    .header {
-                                                        background-color: #007bff;
-                                                        color: #ffffff;
-                                                        padding: 20px;
-                                                        text-align: center;
-                                                        font-size: 24px;
-                                                    }
-                                                    .content {
-                                                        padding: 20px;
-                                                    }
-                                                    .footer {
-                                                        background-color: #f4f4f4;
-                                                        text-align: center;
-                                                        padding: 10px;
-                                                        font-size: 12px;
-                                                        color: #777777;
-                                                    }
-                                                    .button {
-                                                        background-color: #007bff;
-                                                        color: #ffffff !important;
-                                                        padding: 10px 20px;
-                                                        border: none;
-                                                        border-radius: 5px;
-                                                        cursor: pointer;
-                                                    }
-                                                    a {
-                                                        text-decoration: none;
-                                                    }
-                                                </style>
-                                            </head>
-                                            <body>
-                                                <div class="container">
-                                                    <div class="header">
-                                                        Friend Request
-                                                    </div>
-                                                    <div class="content">
-                                                        <p>Dear ${friendUsername},</p>
-                                                        <p>You have received a friend request. Please confirm the request by clicking the button below:</p>
-                                                        <a class="button" href="${confirmationlink}" id="confirm">Confirm Request</a>
-                                                        <p>If you did not send this request, you can ignore this email.</p>
-                                                    </div>
-                                                    <div class="footer">© 2023 - 2024 David Bach. All rights reserved.</div>
-                                                </div>
-                                            </body>
-                                            </html>
-                                            `
-                                    }
-
-                                    transporter.sendMail(mailOptions, (error, info) => {
-                                        if (error) {
-                                            console.log(error);
-                                            return res.json({error: 'Error sending email'});
-                                        } else {
-                                            return res.json({
-                                                success: true,
-                                                userID: results[i].userID,
-                                                friendUsername: friendUsername,
-                                                friendstatus: friendStatus
-                                            });
-                                        }
-                                    })
-                                } else {
-                                    return res.json({error: 'Invalid Friend Username'});
-                                }
-                            }
-                        }
-
-                    })
-                }
-
+    if (friendIDCode === myuserID) {
+        return res.json({error: 'You cannot add yourself as a friend'});
+    } else {
+        const getFriendfromMyTable = `SELECT *
+                                      FROM \`${myuserID}\`;`;
+        connection.query(getFriendfromMyTable, (err, results) => {
+            if (err) {
+                console.error('Error getting the database:', err);
+                return res.status(500).json({error: 'Database error'});
             }
 
-        }
-    })
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].friendsID === friendIDCode && results[i].friendsStatus !== '') {
+                    // console.log("Friend already added");
+                    return res.json({error: 'Friend already added'});
+                }
+
+                if (i === results.length - 1) {
+                    if (results[i].friendsID !== friendIDCode && results[i].friendsID !== myuserID) {
+                        let senderusername = decrypt(JSON.parse(results[i].username));
+
+                        //console.log("Friend not added");
+                        const getFriendIDQuery = `SELECT *
+                                                  FROM Usernames;`;
+                        connection.query(getFriendIDQuery, (err, results) => {
+                            if (err) {
+                                console.error('Error getting the database:', err);
+                                return res.status(500).json({error: 'Database error'});
+                            }
+
+                            for (let i = 0; i < results.length; i++) {
+                                if (results[i].userID === friendIDCode) {
+                                    if (decrypt(JSON.parse(results[i].usernames)) === friendUsername) {
+                                        let friendEmail = decrypt(JSON.parse(results[i].emails));
+                                        const friendStatus = 'Pending';
+                                        let confirmationlink = `http://localhost:63342/secure-text-messanger-dev-node/html/getInfoViaUrl.html?userID=${encodeURIComponent(myuserID)}&friendID=${encodeURIComponent(friendIDCode)}&senderusername=${encodeURIComponent(senderusername)}`
+                                        const addFriendQuery = `INSERT INTO \`${myuserID}\` (friendsID, friendsUsername, username, friendsStatus, chats)
+                                                                VALUES (${friendIDCode},
+                                                                        '${JSON.stringify(encrypt(friendUsername))}',
+                                                                        '',
+                                                                        'Pending',
+                                                                        '');`;
+                                        connection.query(addFriendQuery, (err, results) => {
+                                            if (err) {
+                                                console.error('Error adding friend:', err);
+                                                return res.status(500).json({error: 'Database error'});
+                                            }
+                                        })
+
+                                        const mailOptions = {
+                                            from: `Secure Text Messenger <kontakt@davidbach.eu>`,
+                                            to: friendEmail,
+                                            subject: 'Friend Request',
+                                            html: `
+                                                <!DOCTYPE html>
+                                                <html lang="en">
+                                                <head>
+                                                    <meta charset="UTF-8">
+                                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                                    <title>Friend Request</title>
+                                                    <style>
+                                                        body {
+                                                            font-family: Arial, sans-serif;
+                                                            background-color: #f4f4f4;
+                                                            margin: 0;
+                                                            padding: 0;
+                                                            color: #333333;
+                                                        }
+                                                        .container {
+                                                            width: 100%;
+                                                            max-width: 600px;
+                                                            margin: 0 auto;
+                                                            background-color: #ffffff;
+                                                            border-radius: 8px;
+                                                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                                                            overflow: hidden;
+                                                        }
+                                                        .header {
+                                                            background-color: #007bff;
+                                                            color: #ffffff;
+                                                            padding: 20px;
+                                                            text-align: center;
+                                                            font-size: 24px;
+                                                        }
+                                                        .content {
+                                                            padding: 20px;
+                                                        }
+                                                        .footer {
+                                                            background-color: #f4f4f4;
+                                                            text-align: center;
+                                                            padding: 10px;
+                                                            font-size: 12px;
+                                                            color: #777777;
+                                                        }
+                                                        .button {
+                                                            background-color: #007bff;
+                                                            color: #ffffff !important;
+                                                            padding: 10px 20px;
+                                                            border: none;
+                                                            border-radius: 5px;
+                                                            cursor: pointer;
+                                                        }
+                                                        a {
+                                                            text-decoration: none;
+                                                        }
+                                                    </style>
+                                                </head>
+                                                <body>
+                                                    <div class="container">
+                                                        <div class="header">
+                                                            Friend Request
+                                                        </div>
+                                                        <div class="content">
+                                                            <p>Dear ${friendUsername},</p>
+                                                            <p>You have received a friend request. Please confirm the request by clicking the button below:</p>
+                                                            <a class="button" href="${confirmationlink}" id="confirm">Confirm Request</a>
+                                                            <p>If you did not send this request, you can ignore this email.</p>
+                                                        </div>
+                                                        <div class="footer">© 2023 - 2024 David Bach. All rights reserved.</div>
+                                                    </div>
+                                                </body>
+                                                </html>
+                                                `
+                                        }
+
+                                        transporter.sendMail(mailOptions, (error, info) => {
+                                            if (error) {
+                                                console.log(error);
+                                                return res.json({error: 'Error sending email'});
+                                            } else {
+                                                return res.json({
+                                                    success: true,
+                                                    userID: results[i].userID,
+                                                    friendUsername: friendUsername,
+                                                    friendstatus: friendStatus
+                                                });
+                                            }
+                                        })
+                                    } else {
+                                        return res.json({error: 'Invalid Friend Username'});
+                                    }
+                                }
+                            }
+
+                        })
+                    }
+                }
+            }
+        })
+    }
 })
 
 app.post('/getFriends', (req, res) => {
@@ -969,9 +776,7 @@ app.post('/getFriends', (req, res) => {
 })
 
 app.post('/acceptFriend', (req, res) => {
-    let myuserID = req.body.myuserID;
-    let senderUserID = req.body.senderUserID;
-    let senderusername = req.body.senderusername;
+    let {myuserID, senderUserID, senderusername} = req.body;
 
     const getverifydata = `SELECT *
                            FROM Usernames;`;
@@ -988,38 +793,43 @@ app.post('/acceptFriend', (req, res) => {
 
             if (senderusername === decryptedusername && senderUserID === userID) {
                 const myQuery = `SELECT *
-                                 FROM \`${myuserID}\`;`;
+                                 FROM \`${senderUserID}\`;`;
                 connection.query(myQuery, (err, results) => {
                     if (err) {
                         console.error('Error getting the database:', err);
                         return res.status(500).json({error: 'Database error'});
                     }
                     for (let j = 0; j < results.length; j++) {
-                        if (results[j].friendsID !== senderUserID && results[j].friendsID !== '') {
-                            const getFriendQuery = `UPDATE \`${senderUserID}\`
-                                                    SET friendsStatus = 'Accepted'
-                                                    WHERE friendsID = '${myuserID}';`;
-                            connection.query(getFriendQuery, (err, results) => {
-                                if (err) {
-                                    console.error('Error getting the database:', err);
-                                    return res.status(500).json({error: 'Database error'});
-                                }
 
-                                const setFriendInMyQuery = `INSERT INTO \`${myuserID}\` (friendsID, friendsUsername, username, friendsStatus)
-                                                            VALUES ('${senderUserID}',
-                                                                    '${JSON.stringify(encrypt(senderusername))}', '',
-                                                                    'Accepted');`;
-                                connection.query(setFriendInMyQuery, (err, results) => {
+                        if (j === results.length - 1) {
+                            if (results[j].friendsID === myuserID && results[j].friendsID !== '') {
+                                const getFriendQuery = `UPDATE \`${senderUserID}\`
+                                                        SET friendsStatus = 'Accepted'
+                                                        WHERE friendsID = '${myuserID}';`;
+                                connection.query(getFriendQuery, (err, results) => {
                                     if (err) {
                                         console.error('Error getting the database:', err);
                                         return res.status(500).json({error: 'Database error'});
                                     }
 
-                                    return res.json({success: true});
+                                    const setFriendInMyQuery = `INSERT INTO \`${myuserID}\` (friendsID, friendsUsername, username, friendsStatus, chats)
+                                                                VALUES ('${senderUserID}',
+                                                                        '${JSON.stringify(encrypt(senderusername))}',
+                                                                        '',
+                                                                        'Accepted',
+                                                                        '');`;
+                                    connection.query(setFriendInMyQuery, (err, results) => {
+                                        if (err) {
+                                            console.error('Error getting the database:', err);
+                                            return res.status(500).json({error: 'Database error'});
+                                        }
+
+                                        return res.json({success: true});
+                                    })
                                 })
-                            })
-                        } else {
-                            return res.json({success: false});
+                            } else {
+                                return res.json({success: false});
+                            }
                         }
                     }
                 })
@@ -1046,39 +856,301 @@ app.post('/declineFriend', (req, res) => {
             let userID = results[i].userID;
 
             if (senderusername === decryptedusername && senderUserID === userID) {
-                const FriendQuery = `SELECT *
-                                     FROM \`${senderUserID}\`;`;
-                connection.query(FriendQuery, (err, results) => {
-                        if (err) {
-                            console.error('Error getting the database:', err);
-                            return res.status(500).json({error: 'Database error'});
-                        }
+                const myQuery = `SELECT *
+                                 FROM \`${senderUserID}\`;`;
+                connection.query(myQuery, (err, results) => {
+                    if (err) {
+                        console.error('Error getting the database:', err);
+                        return res.status(500).json({error: 'Database error'});
+                    }
+                    for (let j = 0; j < results.length; j++) {
 
-                        for (let j = 0; j < results.length; j++) {
+                        if (j === results.length - 1) {
+                            console.log(results[j].friendsID === myuserID && results[j].friendsID !== '');
                             if (results[j].friendsID === myuserID && results[j].friendsID !== '') {
-                                const removeFromFriendQuery = `DELETE
-                                                               FROM \`${senderUserID}\`
-                                                               WHERE friendsID = '${myuserID}';`;
-                                connection.query(removeFromFriendQuery, (err, results) => {
+                                const getFriendQuery = `UPDATE \`${senderUserID}\`
+                                                        SET friendsStatus = 'Accepted'
+                                                        WHERE friendsID = '${myuserID}';`;
+                                connection.query(getFriendQuery, (err, results) => {
                                     if (err) {
                                         console.error('Error getting the database:', err);
                                         return res.status(500).json({error: 'Database error'});
                                     }
 
-                                    return res.json({success: true});
+
+                                    const removeFromFriendQuery = `DELETE
+                                                                   FROM \`${senderUserID}\`
+                                                                   WHERE friendsID = '${myuserID}';`;
+                                    connection.query(removeFromFriendQuery, (err, results) => {
+                                        if (err) {
+                                            console.error('Error getting the database:', err);
+                                            return res.status(500).json({error: 'Database error'});
+                                        }
+
+                                        return res.json({success: true});
+                                    })
                                 })
                             } else {
-                                if (j === results.length - 1) {
-                                    return res.json({success: false});
-                                }
+                                return res.json({success: false});
                             }
                         }
                     }
-                )
+                })
             }
         }
     })
 });
+
+app.post('/deleteFriend', (req, res) => {
+
+    let {myuserID, friendID, friendUsername} = req.body;
+
+    const getverifydata = `SELECT *
+                           FROM Usernames;`;
+    connection.query(getverifydata, (err, results) => {
+        if (err) {
+            console.error('Error getting the database:', err);
+            return res.status(500).json({error: 'Database error'});
+        }
+
+        for (let i = 0; i < results.length; i++) {
+            let decryptedusername = decrypt(JSON.parse(results[i].usernames));
+            let userID = results[i].userID;
+
+            if (friendUsername === decryptedusername && friendID === userID) {
+                const myQuery = `SELECT *
+                                 FROM \`${myuserID}\`;`;
+                connection.query(myQuery, (err, results) => {
+                    if (err) {
+                        console.error('Error getting the database:', err);
+                        return res.status(500).json({error: 'Database error'});
+                    }
+                    for (let j = 0; j < results.length; j++) {
+
+                        if (j === results.length - 1) {
+                            if (results[j].friendsID === friendID) {
+                                const deleteFriendQuery = `DELETE
+                                                           FROM \`${myuserID}\`
+                                                           WHERE friendsID = '${friendID}';`;
+                                connection.query(deleteFriendQuery, (err, results) => {
+                                    if (err) {
+                                        console.error('Error getting the database:', err);
+                                        return res.status(500).json({error: 'Database error'});
+                                    }
+
+                                    const removeFromFriendQuery = `DELETE
+                                                                   FROM \`${friendID}\`
+                                                                   WHERE friendsID = '${myuserID}';`;
+                                    connection.query(removeFromFriendQuery, (err, results) => {
+                                        if (err) {
+                                            console.error('Error getting the database:', err);
+                                            return res.status(500).json({error: 'Database error'});
+                                        }
+
+                                        return res.json({success: true});
+                                    })
+                                })
+                            } else {
+                                return res.json({success: false});
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    })
+})
+
+app.post('/createorgetchat', (req, res) => {
+    let {myuserID, friendName, friendID} = req.body;
+
+    const getChatsfromMe = `SELECT *
+                            FROM \`${myuserID}\`;`;
+    connection.query(getChatsfromMe, (err, results) => {
+        if (err) {
+            console.error('Error getting the database:', err);
+            return res.status(500).json({error: 'Database error'});
+        }
+
+        for (let i = 0; i < results.length; i++) {
+            if (results[i].friendsID === friendID && results[i].friendsID !== '') {
+                if (results[i].friendsID === friendID && results[i].chats !== '') {
+                    return res.json({success: 'Connecting...', results: encrypt(results[i].chats)});
+                } else {
+                    let chatCode = '';
+                    let characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+                    for (let a = 0; a < 12; a++) {
+                        let randomIndex = Math.floor(Math.random() * characters.length);
+                        chatCode += characters.charAt(randomIndex);
+                    }
+
+                    const createnewchatTable = `CREATE TABLE ${chatCode}
+                                                (
+                                                    message  VARCHAR(2048),
+                                                    username VARCHAR(1024)
+                                                );`;
+                    connection.query(createnewchatTable, (err, results) => {
+                        if (err) {
+                            console.error('Error getting the database:', err);
+                            return res.status(500).json({error: 'Database error'});
+                        }
+
+                        const addChattomyAccount = `SELECT *
+                                                    FROM \`${myuserID}\`;`;
+                        connection.query(addChattomyAccount, (err, results) => {
+                            if (err) {
+                                console.error('Error getting the database:', err);
+                                return res.status(500).json({error: 'Database error'});
+                            }
+
+                            for (let j = 0; j < results.length; j++) {
+                                if (results[j].friendsID === friendID) {
+                                    const addInto = `UPDATE \`${myuserID}\`
+                                                     SET chats = '${chatCode}'
+                                                     WHERE friendsID = '${friendID}';`;
+                                    connection.query(addInto, (err, results) => {
+                                        if (err) {
+                                            console.error('Error getting the database:', err);
+                                            return res.status(500).json({error: 'Database error'});
+                                        }
+
+                                        const addToFriendsAccount = `SELECT *
+                                                                     FROM \`${friendID}\`;`;
+                                        connection.query(addToFriendsAccount, (err, results) => {
+                                            if (err) {
+                                                console.error('Error getting the database:', err);
+                                                return res.status(500).json({error: 'Database error'});
+                                            }
+
+                                            for (let k = 0; k < results.length; k++) {
+                                                if (results[k].friendsID === myuserID) {
+                                                    const addInto = `UPDATE \`${friendID}\`
+                                                                     SET chats = '${chatCode}'
+                                                                     WHERE friendsID = '${myuserID}';`;
+                                                    connection.query(addInto, (err, results) => {
+                                                        if (err) {
+                                                            console.error('Error getting the database:', err);
+                                                            return res.status(500).json({error: 'Database error'});
+                                                        }
+
+                                                        return res.json({success: 'Connecting...', results: encrypt(chatCode)});
+                                                    })
+                                                }
+                                            }
+                                        })
+                                    })
+                                }
+                            }
+                        })
+                    })
+                }
+            }
+        }
+    })
+})
+
+app.post('/getChat', (req, res) => {
+    let {myuserID, chatCode} = req.body;
+    chatCode = decrypt(chatCode);
+
+    const getChatContent = `SELECT *
+                            FROM \`${chatCode}\`;`;
+    connection.query(getChatContent, (err, results) => {
+        if (err) {
+            console.error('Error getting the database:', err);
+            return res.status(500).json({error: 'Database error'});
+        }
+
+        if (results.length > 0) {
+            let message = [];
+            let userid = [];
+            for (let j = 0; j < results.length; j++) {
+                message.push(chatdecrypt(JSON.parse(results[j].message)));
+                userid.push(results[j].username);
+
+                if (j === results.length - 1) {
+                    return res.json({
+                        success: true,
+                        message: message,
+                        userid: userid,
+                        myuserID: myuserID,
+                        index: j + 1,
+                        chatCode: encrypt(chatCode)
+                    });
+                }
+            }
+        } else {
+            return res.json({success: 'Pending', chatCode: encrypt(chatCode)});
+        }
+    })
+});
+
+app.post('/sendMessage', (req, res) => {
+    let {myuserID, message, chatCode, friendID, friendName} = req.body;
+    chatCode = decrypt(chatCode);
+
+    if (!message) {
+        return res.json({error: 'Not Message received'});
+    }
+
+    const messagePattern = /[<>"'|{}\[\]\/!]/;
+
+    if (messagePattern.test(message)) {
+        return res.json({error: 'Message contains invalid characters'});
+    }
+
+    const addMessage = `INSERT INTO \`${chatCode}\` (message, username)
+                        VALUES ('${JSON.stringify(chatencrypt(message))}',
+                                '${myuserID}');`;
+    connection.query(addMessage, (err, results) => {
+        if (err) {
+            console.error('Error getting the database:', err);
+            return res.status(500).json({error: 'Database error'});
+        }
+
+        const getContnt = `SELECT *
+                           FROM \`${chatCode}\`;`;
+        connection.query(getContnt, (err, results) => {
+            if (err) {
+                console.error('Error getting the database:', err);
+                return res.status(500).json({error: 'Database error'});
+            }
+
+            let message = [];
+            let userid = [];
+            for (let j = 0; j < results.length; j++) {
+                message.push(chatdecrypt(JSON.parse(results[j].message)));
+                userid.push(results[j].username);
+
+                if (j === results.length - 1) {
+                    return res.json({
+                        success: true,
+                        message: message,
+                        userid: userid,
+                        myuserID: myuserID,
+                        index: j + 1,
+                        chatCode: encrypt(chatCode)
+                    });
+                }
+            }
+        })
+    })
+});
+
+const wss = new WebSocketServer({port: 8000});
+wss.on("connection", (ws) => {
+    ws.on("message", (message) => {
+        wss.broadcast(message);
+    })
+});
+
+wss.broadcast = (message) => {
+    wss.clients.forEach(client => {
+        client.send(message.toString('utf-8'));
+    })
+}
+
 
 app.listen(port, () => {
     console.log(`Server listening at port: ${port}`);

@@ -22,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    document.getElementById("messageInput").disabled = true;
+    document.getElementsByClassName("send")[0].style.backgroundColor = '#c8c8c8';
+    document.getElementsByClassName("currentChat")[0].style.backgroundColor = '#c8c8c8';
     getFriends();
 })
 
@@ -223,14 +226,17 @@ function getFriends() {
         .then(data => {
             for (let i = 0; i < data.friends.length; i++) {
                 if (data.friends[i].friendsID) {
-                    let parent = document.getElementsByClassName("friendslist")[0];
-                    parent.firstElementChild.remove()
+                    let parent = document.getElementById("friendslist");
+
+                    if (parent.firstElementChild.firstElementChild.textContent === "No Friends available") {
+                        parent.firstElementChild.remove();
+                    }
 
 
                     let friend = document.createElement("button");
                     friend.setAttribute("class", "friend");
                     friend.onclick = function () {
-                        // TODO: Open PTP Chat
+                        createorfindchat(data.friends[i].friendsID, data.friends[i].friendsUsername);
                     }
 
 
@@ -242,6 +248,7 @@ function getFriends() {
                         let friendstatus = document.createElement("span");
                         friendstatus.textContent = data.friends[i].friendsStatus;
                         friend.appendChild(friendstatus);
+
                     }
 
                     parent.appendChild(friend);
@@ -325,9 +332,197 @@ function logout() {
     window.location = "../index.html";
 }
 
+const ws = new WebSocket('ws://localhost:8000');
+
+function sendMessage(getChatcode, getUsername, getdata) {
+    let input = document.getElementById("messageInput");
+
+    fetch('http://localhost:3000/sendMessage', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            myuserID: sessionStorage.getItem("UserID"),
+            chatCode: getChatcode,
+            friendName: getUsername,
+            friendID: getdata,
+            message: input.value
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            ws.send(JSON.stringify(data))
+
+            ws.onmessage = function (event) {
+                updateChat(JSON.parse(event.data))
+            }
+
+            if (data.success === true) {
+                updateChat(data);
+                input.value = '';
+            }
+
+            function updateChat(data) {
+                let parent = document.getElementById("currentChat");
+                parent.innerHTML = '';
+                for (let i = 0; i < data.index; i++) {
+                    if (data.userid[i] === sessionStorage.getItem("UserID")) {
+                        let chatEntry = document.createElement("div");
+                        chatEntry.classList.add("message");
+                        chatEntry.classList.add("sendMessage");
+                        chatEntry.textContent = data.message[i];
+                        parent.prepend(chatEntry);
+                    } else {
+                        let chatEntry = document.createElement("div");
+                        chatEntry.classList.add("message");
+                        chatEntry.classList.add("receiveMessage");
+                        chatEntry.textContent = data.message[i];
+                        parent.prepend(chatEntry);
+                    }
+
+                    if (i === data.index - 1) {
+                        enableSendMessage(data.chatCode, getUsername, getdata);
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error getting user data:', error);
+        });
+    input.value = '';
+}
+
+function createorfindchat(getdata, getUsername) {
+    fetch('http://localhost:3000/createorgetchat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            myuserID: sessionStorage.getItem("UserID"),
+            friendName: getUsername,
+            friendID: getdata
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success === 'Connecting...') {
+                let input = document.getElementById("messageInput");
+                document.getElementsByClassName("send")[0].style.backgroundColor = '#ffffff';
+                document.getElementsByClassName("currentChat")[0].style.backgroundColor = '#ffffff';
+                input.disabled = false;
+                input.focus();
+                getChat(data.results, getUsername, getdata);
+                enableSendMessage(data.results, getUsername, getdata)
+
+            }
+        })
+        .catch(error => {
+            console.error('Error getting user data:', error);
+        });
+}
+
+function getChat(chatCode, getUsername, getdata) {
+    fetch('http://localhost:3000/getChat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            myuserID: sessionStorage.getItem("UserID"),
+            chatCode: chatCode
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            if (data.success === true) {
+                let parent = document.getElementById("currentChat");
+
+                parent.innerHTML = '';
+                for (let i = 0; i < data.index; i++) {
+                    if (data.userid[i] === data.myuserID) {
+                        let chatEntry = document.createElement("div");
+                        chatEntry.classList.add("message");
+                        chatEntry.classList.add("sendMessage");
+                        chatEntry.textContent = data.message[i];
+                        parent.prepend(chatEntry);
+                    } else {
+                        let chatEntry = document.createElement("div");
+                        chatEntry.classList.add("message");
+                        chatEntry.classList.add("receiveMessage");
+                        chatEntry.textContent = data.message[i];
+                        parent.prepend(chatEntry);
+                    }
+
+                    if (i === data.index - 1) {
+                        enableSendMessage(data.chatCode, getUsername, getdata);
+                    }
+                }
+            }
+            if (data.success === 'Pending') {
+                enableSendMessage(data.chatCode, getdata, getUsername);
+            }
+        })
+        .catch(error => {
+            console.error('Error getting user data:', error);
+        });
+}
 
 
+function enableSendMessage(chatCode, getUsername, getdata) {
+    let input = document.getElementById("messageInput");
+    let sendButton = document.getElementById("sendBtn");
+
+    document.getElementsByClassName("send")[0].style.backgroundColor = '#ffffff';
+    document.getElementsByClassName("currentChat")[0].style.backgroundColor = '#ffffff';
+    input.disabled = false;
+    input.focus();
 
 
+    function handleKeyPress(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (input.value === "") {
+                return;
+            }
+            sendMessage(chatCode, getUsername, getdata);
+            removeEventListeners();
+        }
+    }
 
+    function handleClick() {
+        if (input.value === "") {
+            return;
+        }
+        sendMessage(chatCode, getUsername, getdata);
+        removeEventListeners();
+    }
 
+    function removeEventListeners() {
+        input.removeEventListener("keypress", handleKeyPress);
+        sendButton.removeEventListener("click", handleClick);
+    }
+
+    if (!input.disabled) {
+        input.addEventListener("keypress", handleKeyPress);
+        sendButton.addEventListener("click", handleClick);
+    }
+}
